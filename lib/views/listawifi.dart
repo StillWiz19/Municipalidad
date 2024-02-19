@@ -21,7 +21,6 @@ class _ListarWifiState extends State<ListarWifi> {
   void initState() {
     super.initState();
     _cargarDatos();
-    claveswifiFiltradas = List.from(claveswifi);
   }
 
   Future<void> _cargarDatos() async {
@@ -36,6 +35,7 @@ class _ListarWifiState extends State<ListarWifi> {
           contrasenia: wifiData[2],
         );
       }).toList();
+      claveswifiFiltradas = List.from(claveswifi);
     });
   }
 
@@ -129,5 +129,3 @@ class _ListarWifiState extends State<ListarWifi> {
     );
   }
 }
-
-

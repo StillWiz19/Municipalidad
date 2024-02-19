@@ -13,14 +13,17 @@ class PrestamosProyector extends StatefulWidget {
 
 class _PrestamoProyectorState extends State<PrestamosProyector> {
   List<Prestamo> prestamos = [];
+  List<Prestamo> prestamosFiltrados = [];
+
+  TextEditingController _controller = TextEditingController();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _cargarDatos();
   }
 
-  Future<void> _cargarDatos() async{
+  Future<void> _cargarDatos() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
     setState(() {
@@ -34,17 +37,29 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
           fecha: prestamosData[4],
         );
       }).toList();
+      prestamosFiltrados = List.from(prestamos);
     });
   }
 
-  Future<void> _eliminarPrestamo(int index) async{
+  Future<void> _eliminarPrestamo(int index) async {
     setState(() {
       prestamos.removeAt(index);
+      prestamosFiltrados.removeAt(index);
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('prestamos', 
-      prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}').toList());
+    await prefs.setStringList('prestamos',
+        prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}').toList());
+  }
+
+  void _filtrarPrestamos(String query) {
+    setState(() {
+      prestamosFiltrados = prestamos.where((prestamo) =>
+          prestamo.numeroSerie.toLowerCase().contains(query.toLowerCase()) ||
+          prestamo.usuario.toLowerCase().contains(query.toLowerCase()) ||
+          prestamo.departamento.toLowerCase().contains(query.toLowerCase()) ||
+          prestamo.fecha.toLowerCase().contains(query.toLowerCase())).toList();
+    });
   }
 
   @override
@@ -66,44 +81,56 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView.builder(
-                itemCount: prestamos.length,
-                itemBuilder: (context, index) {
-                  final prestamo = prestamos[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),                       
-                      ),
-                      child: ListTile(
-                        title: Text(prestamo.numeroSerie),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 8),
-                            Text('N° de Serie: ${prestamo.numeroSerie}'),
-                            Text('Usuario: ${prestamo.usuario}'),
-                            Text('Departamento: ${prestamo.departamento}'),
-                            Text('Motivos: ${prestamo.motivo}'),
-                            Text('Fecha de Prestamo: ${prestamo.fecha}'),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _eliminarPrestamo(index),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _controller,
+                  onChanged: _filtrarPrestamos,
+                  decoration: InputDecoration(
+                    labelText: 'Buscar',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
-          )
+              Expanded(
+                child: ListView.builder(
+                  itemCount: prestamosFiltrados.length,
+                  itemBuilder: (context, index) {
+                    final prestamo = prestamosFiltrados[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(prestamo.numeroSerie),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 8),
+                              Text('N° de Serie: ${prestamo.numeroSerie}'),
+                              Text('Usuario: ${prestamo.usuario}'),
+                              Text('Departamento: ${prestamo.departamento}'),
+                              Text('Motivos: ${prestamo.motivo}'),
+                              Text('Fecha de Prestamo: ${prestamo.fecha}'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _eliminarPrestamo(index),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

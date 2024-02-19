@@ -13,7 +13,7 @@ class ListaInventario extends StatefulWidget {
 
 class _ListaInventarioState extends State<ListaInventario> {
   List<Inventario> inventarios = [];
-  late List<Inventario> inventariosFiltrados = [];
+  List<Inventario> inventariosFiltrados = [];
 
   TextEditingController _controller = TextEditingController();
 
@@ -21,7 +21,6 @@ class _ListaInventarioState extends State<ListaInventario> {
   void initState() {
     super.initState();
     _cargarDatos();
-    inventariosFiltrados = List.from(inventarios);
   }
 
   Future<void> _cargarDatos() async {
@@ -37,6 +36,7 @@ class _ListaInventarioState extends State<ListaInventario> {
           tipoProducto: inventarioData[3],
         );
       }).toList();
+      inventariosFiltrados = List.from(inventarios);
     });
   }
 
@@ -132,5 +132,3 @@ class _ListaInventarioState extends State<ListaInventario> {
     );
   }
 }
-
-
