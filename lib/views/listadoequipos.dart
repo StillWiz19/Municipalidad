@@ -1,17 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/ingresarequipo.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+class Equipo {
+  final String modelo;
+  final String numeroSerie;
+  final String numeroInventario;
+  final String marca;
+  final String ram;
+  final String almacenamiento;
+  final String departamento;
+  final String direccion;
+  final String sistemaOperativo;
+  final String versionOffice;
+
+  Equipo({
+    required this.modelo,
+    required this.numeroSerie,
+    required this.numeroInventario,
+    required this.marca,
+    required this.ram,
+    required this.almacenamiento,
+    required this.departamento,
+    required this.direccion,
+    required this.sistemaOperativo,
+    required this.versionOffice
+  });
+}
 class ListadoEquipo extends StatefulWidget {
-  final List<Equipo> equipos;
-
-  ListadoEquipo({required this.equipos});
-
   @override
   _ListaEquipoState createState() => _ListaEquipoState();
 }
 
 class _ListaEquipoState extends State<ListadoEquipo> {
+  List<Equipo> equipos = [];
   @override
   void initState() {
     super.initState();
@@ -19,42 +43,26 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? equiposData = prefs.getStringList('equipos');
-    if (equiposData != null) {
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
       setState(() {
-        widget.equipos.clear(); 
-        widget.equipos.addAll(equiposData.map((data) {
-          List<String> equipoData = data.split('|');
-          if (equipoData.length >= 10) {
-            return Equipo(
-              modelo: equipoData[0],
-              numeroSerie: equipoData[1],
-              numeroInventario: equipoData[2],
-              marca: equipoData[3],
-              ram: equipoData[4],
-              almacenamiento: equipoData[5],
-              departamento: equipoData[6],
-              direccion: equipoData[7],
-              sistemaOperativo: equipoData[8],
-              versionOffice: equipoData[9],
-            );
-          } else {
-            return Equipo(
-              modelo: 'Ideapad',
-              numeroSerie: '111',
-              numeroInventario: '1',
-              marca: 'Lenovo',
-              ram: '4GB',
-              almacenamiento: '1TB',
-              departamento: 'Administración',
-              direccion: 'No se',
-              sistemaOperativo: 'Windows 10',
-              versionOffice: '365',
-            );
-          }
-        }));
+        equipos = data.map((json) => Equipo(
+              modelo: json['modelo'],
+              numeroSerie: json['numserie'],
+              numeroInventario: json['numinventario'],
+              marca: json['marca'],
+              ram: json['ram'],
+              almacenamiento: json['almacenamiento'],
+              departamento: json['departamento'],
+              direccion: json['direccion'],
+              sistemaOperativo: json['sistemaoperativo'],
+              versionOffice: json['versionoffice'],
+            )).toList();
       });
+    } else {
+      print ('Error: ${response.statusCode}');
     }
   }
 

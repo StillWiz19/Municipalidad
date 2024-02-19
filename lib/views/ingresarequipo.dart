@@ -29,7 +29,6 @@ class Equipo {
   });
 }
 
-TextEditingController _modeloController = TextEditingController();
 TextEditingController _numeroSerieController = TextEditingController();
 TextEditingController _numeroInventarioController = TextEditingController();
 TextEditingController _marcaController = TextEditingController();
@@ -59,7 +58,6 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
 
   @override
   void initState() {
-    _modeloController = TextEditingController();
     _numeroSerieController = TextEditingController();
     _numeroInventarioController = TextEditingController();
     _marcaController = TextEditingController();
@@ -76,7 +74,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     Db_helper db = Db_helper();
 
     db.ingresarEquipo(
-      _modeloController.text,
+      _selectedModelo ?? '',
       _numeroSerieController.text,
       _numeroInventarioController.text,
       _marcaController.text,
@@ -89,7 +87,6 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     );
 
     void _limpiarCajas(){
-      _modeloController.clear();
       _numeroSerieController.clear();
       _numeroInventarioController.clear();
       _marcaController.clear();
@@ -100,6 +97,8 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       _sistemaOperativoController.clear();
       _versionOfficeController.clear();
     }
+
+    _selectedModelo = null;
 
     showDialog(
       context: context,
@@ -121,7 +120,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     _limpiarCajas();
   }
 
-  Future<void> _rellenarDatos(String modelo) async {
+  /*Future<void> _rellenarDatos(String modelo) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? equiposData = prefs.getStringList('equipos') ?? [];
     for (String data in equiposData) {
@@ -133,7 +132,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
         break;
       }
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +154,6 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
                 onChanged: (String? value) {
                   setState(() {
                     _selectedModelo = value;
-                    _rellenarDatos(value!); 
                   });
                 },
                 decoration: InputDecoration(
