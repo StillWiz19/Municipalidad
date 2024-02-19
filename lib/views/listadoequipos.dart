@@ -12,6 +12,9 @@ class ListadoEquipo extends StatefulWidget {
 }
 
 class _ListaEquipoState extends State<ListadoEquipo> {
+  TextEditingController _searchController = TextEditingController();
+  List<Equipo> _filteredEquipos = [];
+
   @override
   void initState() {
     super.initState();
@@ -23,10 +26,10 @@ class _ListaEquipoState extends State<ListadoEquipo> {
     List<String>? equiposData = prefs.getStringList('equipos');
     if (equiposData != null) {
       setState(() {
-        widget.equipos.clear(); 
+        widget.equipos.clear();
         widget.equipos.addAll(equiposData.map((data) {
           List<String> equipoData = data.split('|');
-          if (equipoData.length >= 10) {
+          if (equipoData.length >= 11) {
             return Equipo(
               modelo: equipoData[0],
               numeroSerie: equipoData[1],
@@ -38,6 +41,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               direccion: equipoData[7],
               sistemaOperativo: equipoData[8],
               versionOffice: equipoData[9],
+              descripcion: equipoData[10],
             );
           } else {
             return Equipo(
@@ -51,21 +55,34 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               direccion: 'No se',
               sistemaOperativo: 'Windows 10',
               versionOffice: '365',
+              descripcion: '',
             );
           }
         }));
+        _filteredEquipos.addAll(widget.equipos); 
       });
     }
+  }
+
+  void _filterEquipos(String searchTerm) {
+    setState(() {
+      _filteredEquipos = widget.equipos
+          .where((equipo) =>
+              equipo.modelo.toLowerCase().contains(searchTerm.toLowerCase()) ||
+              equipo.numeroSerie.toLowerCase().contains(searchTerm.toLowerCase())) 
+          .toList();
+    });
   }
 
   Future<void> _eliminarEquipo(int index) async {
     setState(() {
       widget.equipos.removeAt(index);
+      _filteredEquipos.removeAt(index); // Remover de la lista filtrada también
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('equipos',
-        widget.equipos.map((equipo) => '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}').toList());
+    await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
@@ -87,52 +104,65 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue[200]!, Colors.green[200]!], 
+                colors: [Colors.blue[200]!, Colors.green[200]!],
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                itemCount: widget.equipos.length,
-                itemBuilder: (context, index) {
-                  final equipo = widget.equipos[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(equipo.marca),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 8),
-                            Text('Modelo: ${equipo.modelo}'),
-                            Text('N° de Serie: ${equipo.numeroSerie}'),
-                            Text('N° de Inventario: ${equipo.numeroInventario}'),
-                            Text('Marca: ${equipo.marca}'),
-                            Text('Ram: ${equipo.ram}'),
-                            Text('Almacenamiento: ${equipo.almacenamiento}'),
-                            Text('Departamento: ${equipo.departamento}'),
-                            Text('Direccion: ${equipo.direccion}'),
-                            Text('Sistema Operativo: ${equipo.sistemaOperativo}'),
-                            Text('Version de Office: ${equipo.versionOffice}'),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _eliminarEquipo(index),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: _filterEquipos,
+                  decoration: InputDecoration(
+                    labelText: 'Buscar equipo',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredEquipos.length,
+                  itemBuilder: (context, index) {
+                    final equipo = _filteredEquipos[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(equipo.marca),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 8),
+                              Text('Modelo: ${equipo.modelo}'),
+                              Text('N° de Serie: ${equipo.numeroSerie}'),
+                              Text('N° de Inventario: ${equipo.numeroInventario}'),
+                              Text('Marca: ${equipo.marca}'),
+                              Text('Ram: ${equipo.ram}'),
+                              Text('Almacenamiento: ${equipo.almacenamiento}'),
+                              Text('Departamento: ${equipo.departamento}'),
+                              Text('Direccion: ${equipo.direccion}'),
+                              Text('Sistema Operativo: ${equipo.sistemaOperativo}'),
+                              Text('Version de Office: ${equipo.versionOffice}'),
+                              Text('Descripción: ${equipo.descripcion}'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _eliminarEquipo(index),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

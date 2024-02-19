@@ -120,7 +120,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
               controller: _tipoProductoController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "Tipo Producto"
+                labelText: "Marca"
               ),
             ),
           ),

@@ -13,6 +13,7 @@ class Equipo {
   final String direccion;
   final String sistemaOperativo;
   final String versionOffice;
+  final String descripcion;
 
   Equipo({
     required this.modelo,
@@ -25,6 +26,7 @@ class Equipo {
     required this.direccion,
     required this.sistemaOperativo,
     required this.versionOffice,
+    required this.descripcion,
   });
 }
 
@@ -38,6 +40,7 @@ TextEditingController _departamentoController = TextEditingController();
 TextEditingController _direccionController = TextEditingController();
 TextEditingController _sistemaOperativoController = TextEditingController();
 TextEditingController _versionOfficeController = TextEditingController();
+TextEditingController _descripcionController = TextEditingController();
 
 class IngresarEquipo extends StatefulWidget {
   const IngresarEquipo({Key? key}) : super(key: key);
@@ -68,6 +71,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     _direccionController = TextEditingController();
     _sistemaOperativoController = TextEditingController();
     _versionOfficeController = TextEditingController();
+    _descripcionController = TextEditingController();
     super.initState();
   }
 
@@ -81,6 +85,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     String direccion = _direccionController.text;
     String sistemaOperativo = _sistemaOperativoController.text;
     String versionOffice = _versionOfficeController.text;
+    String descripcion = _descripcionController.text;
 
     Equipo equipo = Equipo(
       modelo: _selectedModelo ?? '',
@@ -93,12 +98,13 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       direccion: direccion,
       sistemaOperativo: sistemaOperativo,
       versionOffice: versionOffice,
+      descripcion: descripcion,
     );
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
     await prefs.setStringList('equipos', equiposData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -116,6 +122,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     _direccionController.clear();
     _sistemaOperativoController.clear();
     _versionOfficeController.clear();
+    _descripcionController.clear();
 
     showDialog(
       context: context,
@@ -268,6 +275,17 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Version Office",
+                ),
+              ),
+            ),
+             Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: TextField(
+                controller: _descripcionController,
+                maxLines: null,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Descripción",
                 ),
               ),
             ),

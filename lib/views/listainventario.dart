@@ -13,7 +13,7 @@ class ListaInventario extends StatefulWidget {
 
 class _ListaInventarioState extends State<ListaInventario> {
   List<Inventario> inventarios = [];
-  late List<Inventario> inventariosFiltrados = []; // Inicializa la lista de inventarios filtrados
+  late List<Inventario> inventariosFiltrados = [];
 
   TextEditingController _controller = TextEditingController();
 
@@ -21,7 +21,7 @@ class _ListaInventarioState extends State<ListaInventario> {
   void initState() {
     super.initState();
     _cargarDatos();
-    inventariosFiltrados = List.from(inventarios); // Inicializa inventariosFiltrados con la lista de inventarios
+    inventariosFiltrados = List.from(inventarios);
   }
 
   Future<void> _cargarDatos() async {
@@ -53,7 +53,9 @@ class _ListaInventarioState extends State<ListaInventario> {
 
   void _filtrarInventarios(String query) {
     setState(() {
-      inventariosFiltrados = inventarios.where((inventario) => inventario.numeroInventario.toLowerCase().contains(query.toLowerCase())).toList();
+      inventariosFiltrados = inventarios.where((inventario) =>
+          inventario.numeroInventario.toLowerCase().contains(query.toLowerCase()) ||
+          inventario.nombreProducto.toLowerCase().contains(query.toLowerCase())).toList();
     });
   }
 
@@ -109,7 +111,8 @@ class _ListaInventarioState extends State<ListaInventario> {
                               SizedBox(height: 8),
                               Text('N° de Serie: ${inventario.numeroSerie}'),
                               Text('N° de Inventario: ${inventario.numeroInventario}'),
-                              Text('Tipo Producto: ${inventario.tipoProducto}'),
+                              Text('Dispositivo: ${inventario.nombreProducto}'),
+                              Text('Marca: ${inventario.tipoProducto}'),
                             ],
                           ),
                           trailing: IconButton(
@@ -129,4 +132,5 @@ class _ListaInventarioState extends State<ListaInventario> {
     );
   }
 }
+
 
