@@ -3,26 +3,24 @@ import 'package:muniinventario/views/listadoequipos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Equipo {
+  final String modelo;
   final String numeroSerie;
   final String numeroInventario;
   final String marca;
-  final String modelo;
   final String ram;
   final String almacenamiento;
-  final String usuario;
   final String departamento;
   final String direccion;
   final String sistemaOperativo;
   final String versionOffice;
 
   Equipo({
+    required this.modelo,
     required this.numeroSerie,
     required this.numeroInventario,
     required this.marca,
-    required this.modelo,
     required this.ram,
     required this.almacenamiento,
-    required this.usuario,
     required this.departamento,
     required this.direccion,
     required this.sistemaOperativo,
@@ -30,13 +28,12 @@ class Equipo {
   });
 }
 
+TextEditingController _modeloController = TextEditingController();
 TextEditingController _numeroSerieController = TextEditingController();
 TextEditingController _numeroInventarioController = TextEditingController();
 TextEditingController _marcaController = TextEditingController();
-TextEditingController _modeloController = TextEditingController();
 TextEditingController _ramController = TextEditingController();
 TextEditingController _almacenController = TextEditingController();
-TextEditingController _usuarioController = TextEditingController();
 TextEditingController _departamentoController = TextEditingController();
 TextEditingController _direccionController = TextEditingController();
 TextEditingController _sistemaOperativoController = TextEditingController();
@@ -50,27 +47,48 @@ class IngresarEquipo extends StatefulWidget {
 }
 
 class _IngresaEquipoState extends State<IngresarEquipo> {
+  List<String> modelos = [
+    'Ideapad',
+    'Victus',
+    'TufGaming',
+    'Ideapad2',
+  ];
+
+  String? _selectedModelo;
+
+  @override
+  void initState() {
+    _modeloController = TextEditingController();
+    _numeroSerieController = TextEditingController();
+    _numeroInventarioController = TextEditingController();
+    _marcaController = TextEditingController();
+    _ramController = TextEditingController();
+    _almacenController = TextEditingController();
+    _departamentoController = TextEditingController();
+    _direccionController = TextEditingController();
+    _sistemaOperativoController = TextEditingController();
+    _versionOfficeController = TextEditingController();
+    super.initState();
+  }
+
   void _guardarDatos(BuildContext context) async {
     String numeroSerie = _numeroSerieController.text;
     String numeroInventario = _numeroInventarioController.text;
     String marca = _marcaController.text;
-    String modelo = _modeloController.text;
     String ram = _ramController.text;
     String almacenamiento = _almacenController.text;
-    String usuario = _usuarioController.text;
     String departamento = _departamentoController.text;
     String direccion = _direccionController.text;
     String sistemaOperativo = _sistemaOperativoController.text;
     String versionOffice = _versionOfficeController.text;
 
     Equipo equipo = Equipo(
+      modelo: _selectedModelo ?? '',
       numeroSerie: numeroSerie,
       numeroInventario: numeroInventario,
       marca: marca,
-      modelo: modelo,
       ram: ram,
       almacenamiento: almacenamiento,
-      usuario: usuario,
       departamento: departamento,
       direccion: direccion,
       sistemaOperativo: sistemaOperativo,
@@ -80,7 +98,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.modelo}|${equipo.ram}|${equipo.almacenamiento}|${equipo.usuario}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}');
     await prefs.setStringList('equipos', equiposData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -88,14 +106,12 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       ListadoEquipo listadoEquipo = arguments;
       listadoEquipo.equipos.add(equipo);
     }
-
+    _modeloController.clear();
     _numeroSerieController.clear();
     _numeroInventarioController.clear();
     _marcaController.clear();
-    _modeloController.clear();
     _ramController.clear();
     _almacenController.clear();
-    _usuarioController.clear();
     _departamentoController.clear();
     _direccionController.clear();
     _sistemaOperativoController.clear();
@@ -120,6 +136,20 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     );
   }
 
+  Future<void> _rellenarDatos(String modelo) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? equiposData = prefs.getStringList('equipos') ?? [];
+    for (String data in equiposData) {
+      List<String> equipoData = data.split('|');
+      if (equipoData[0] == modelo) {
+        _marcaController.text = equipoData[3];
+        _ramController.text = equipoData[4];
+        _almacenController.text = equipoData[5];
+        break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,6 +157,28 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: DropdownButtonFormField<String>(
+                value: _selectedModelo,
+                items: modelos.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedModelo = value;
+                    _rellenarDatos(value!); 
+                  });
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Modelo',
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: TextField(
@@ -162,16 +214,6 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: TextField(
-                controller: _modeloController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Modelo",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
                 controller: _ramController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -186,17 +228,6 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Almacenamiento",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _usuarioController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Usuario",
-                  prefixIcon: Icon(Icons.person),
                 ),
               ),
             ),
@@ -252,16 +283,4 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-    
-
-   
 

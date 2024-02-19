@@ -1,28 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/ingresarequipo.dart';
 import 'package:muniinventario/views/listadoequipos.dart';
-import 'package:muniinventario/views/buscarequipos.dart';
-import 'package:muniinventario/views/buscarinventario.dart';
 import 'package:muniinventario/views/ingresoinventario.dart';
 import 'package:muniinventario/views/listainventario.dart';
 
 class RegistrarEquipos extends StatelessWidget {
-
-  final List<Inventario> inventarios = [
-    Inventario(
-      numeroSerie: '123456',
-      numeroInventario: 'INV-001',
-      nombreProducto: 'Product 1',
-      tipoProducto: 'Type A',
-    ),
-    Inventario(
-      numeroSerie: '789012',
-      numeroInventario: 'INV-002',
-      nombreProducto: 'Product 2',
-      tipoProducto: 'Type B',
-    ),
-   
-  ];
 
   @override
   Widget _buildMenuItem(
@@ -63,6 +45,7 @@ class RegistrarEquipos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Equipo> equipos = []; 
+    List<Inventario> inventarios = [];
     return Scaffold(
       appBar: AppBar(
         title: Text('Menu Inventario',
@@ -90,11 +73,7 @@ class RegistrarEquipos extends StatelessWidget {
             _buildMenuItem(
                 context, Icons.checklist_rtl, 'Listado de Equipos', ListadoEquipo(equipos: equipos)),
             _buildMenuItem(
-                context, Icons.search, 'Buscar Equipos', BuscarEquipos(equipos: equipos)),
-            _buildMenuItem(
                 context, Icons.inventory_outlined, 'Ingreso Inventario', IngresarInventario()),
-            _buildMenuItem(
-                context, Icons.search, 'Buscar Inventario', BuscarInventarios(inventarios: inventarios)),
             _buildMenuItem(
                 context, Icons.checklist_rtl, 'Lista Inventario', ListaInventario(inventarios: inventarios)),
           ],
