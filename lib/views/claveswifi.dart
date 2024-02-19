@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 import 'package:muniinventario/views/listawifi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,9 +15,9 @@ class Wifi {
   });
 }
 
-    TextEditingController nombreRedController = TextEditingController();
-    TextEditingController departamentoController = TextEditingController();
-    TextEditingController contraseniaController = TextEditingController();
+    TextEditingController _nombreRedController = TextEditingController();
+    TextEditingController _departamentoController = TextEditingController();
+    TextEditingController _contraseniaController = TextEditingController();
 
 class ClavesWifi extends StatefulWidget{
   const ClavesWifi({Key? key}) : super(key: key);
@@ -27,9 +28,9 @@ class ClavesWifi extends StatefulWidget{
 
 class _ClavesWifiState extends State<ClavesWifi>{
   void _guardarDatos(BuildContext context) async {
-    String nombreRed = nombreRedController.text;
-    String departamento = departamentoController.text;
-    String contrasenia = contraseniaController.text;
+    String nombreRed = _nombreRedController.text;
+    String departamento = _departamentoController.text;
+    String contrasenia = _contraseniaController.text;
 
     Wifi wifi = Wifi(
       nombreRed: nombreRed,
@@ -48,9 +49,9 @@ class _ClavesWifiState extends State<ClavesWifi>{
       listarWifi.claveswifi.add(wifi);
     }
 
-    nombreRedController.clear();
-    departamentoController.clear();
-    contraseniaController.clear();
+    _nombreRedController.clear();
+    _departamentoController.clear();
+    _contraseniaController.clear();
 
     showDialog(
       context: context,
@@ -79,7 +80,7 @@ class _ClavesWifiState extends State<ClavesWifi>{
         Padding(
           padding: const EdgeInsets.all(5.0),
           child: TextField(
-            controller: nombreRedController,
+            controller: _nombreRedController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: "Nombre de Red",
@@ -90,7 +91,7 @@ class _ClavesWifiState extends State<ClavesWifi>{
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
-              controller: departamentoController,
+              controller: _departamentoController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: "Departamento",
@@ -101,7 +102,7 @@ class _ClavesWifiState extends State<ClavesWifi>{
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: TextField(
-                controller: contraseniaController,
+                controller: _contraseniaController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: "Contraseña",

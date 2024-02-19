@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 import 'package:muniinventario/views/listadoequipos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -72,50 +73,33 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
   }
 
   void _guardarDatos(BuildContext context) async {
-    String numeroSerie = _numeroSerieController.text;
-    String numeroInventario = _numeroInventarioController.text;
-    String marca = _marcaController.text;
-    String ram = _ramController.text;
-    String almacenamiento = _almacenController.text;
-    String departamento = _departamentoController.text;
-    String direccion = _direccionController.text;
-    String sistemaOperativo = _sistemaOperativoController.text;
-    String versionOffice = _versionOfficeController.text;
+    Db_helper db = Db_helper();
 
-    Equipo equipo = Equipo(
-      modelo: _selectedModelo ?? '',
-      numeroSerie: numeroSerie,
-      numeroInventario: numeroInventario,
-      marca: marca,
-      ram: ram,
-      almacenamiento: almacenamiento,
-      departamento: departamento,
-      direccion: direccion,
-      sistemaOperativo: sistemaOperativo,
-      versionOffice: versionOffice,
+    db.ingresarEquipo(
+      _modeloController.text,
+      _numeroSerieController.text,
+      _numeroInventarioController.text,
+      _marcaController.text,
+      _ramController.text,
+      _almacenController.text,
+      _departamentoController.text,
+      _direccionController.text,
+      _sistemaOperativoController.text,
+      _versionOfficeController.text
     );
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> equiposData = prefs.getStringList('equipos') ?? [];
-    equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}');
-    await prefs.setStringList('equipos', equiposData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListadoEquipo) {
-      ListadoEquipo listadoEquipo = arguments;
-      listadoEquipo.equipos.add(equipo);
+    void _limpiarCajas(){
+      _modeloController.clear();
+      _numeroSerieController.clear();
+      _numeroInventarioController.clear();
+      _marcaController.clear();
+      _ramController.clear();
+      _almacenController.clear();
+      _departamentoController.clear();
+      _direccionController.clear();
+      _sistemaOperativoController.clear();
+      _versionOfficeController.clear();
     }
-    _modeloController.clear();
-    _numeroSerieController.clear();
-    _numeroInventarioController.clear();
-    _marcaController.clear();
-    _ramController.clear();
-    _almacenController.clear();
-    _departamentoController.clear();
-    _direccionController.clear();
-    _sistemaOperativoController.clear();
-    _versionOfficeController.clear();
 
     showDialog(
       context: context,
@@ -134,6 +118,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
         );
       },
     );
+    _limpiarCajas();
   }
 
   Future<void> _rellenarDatos(String modelo) async {
