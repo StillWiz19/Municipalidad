@@ -27,39 +27,23 @@ class _ListaEquipoState extends State<ListadoEquipo> {
     if (equiposData != null) {
       setState(() {
         widget.equipos.clear();
+        _filteredEquipos.clear();
         widget.equipos.addAll(equiposData.map((data) {
           List<String> equipoData = data.split('|');
-          if (equipoData.length >= 12) {
-            return Equipo(
-              modelo: equipoData[0],
-              numeroSerie: equipoData[1],
-              numeroInventario: equipoData[2],
-              marca: equipoData[3],
-              ram: equipoData[4],
-              almacenamiento: equipoData[5],
-              precesador: equipoData[6],
-              departamento: equipoData[7],
-              direccion: equipoData[8],
-              sistemaOperativo: equipoData[9],
-              versionOffice: equipoData[10],
-              descripcion: equipoData[11],
-            );
-          } else {
-            return Equipo(
-              modelo: 'Ideapad',
-              numeroSerie: '111',
-              numeroInventario: '1',
-              marca: 'Lenovo',
-              ram: '4GB',
-              almacenamiento: '1TB',
-              precesador: 'Intel Core i3',
-              departamento: 'Administración',
-              direccion: 'No se',
-              sistemaOperativo: 'Windows 10',
-              versionOffice: '365',
-              descripcion: '',
-            );
-          }
+          return Equipo(
+            modelo: equipoData[0],
+            numeroSerie: equipoData[1],
+            numeroInventario: equipoData[2],
+            marca: equipoData[3],
+            ram: equipoData[4],
+            almacenamiento: equipoData[5],
+            precesador: equipoData[6],
+            departamento: equipoData[7],
+            direccion: equipoData[8],
+            sistemaOperativo: equipoData[9],
+            versionOffice: equipoData[10],
+            descripcion: equipoData[11],
+          );
         }));
         _filteredEquipos.addAll(widget.equipos); 
       });

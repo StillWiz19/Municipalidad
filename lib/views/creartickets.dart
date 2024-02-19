@@ -7,12 +7,14 @@ class Ticket {
   final String usuario;
   final String departamento;
   final String solicitud;
+  bool aceptado;
 
   Ticket({
     required this.numeroTicket,
     required this.usuario,
     required this.departamento,
     required this.solicitud,
+    this.aceptado = false,
   });
 }
 
@@ -44,7 +46,7 @@ class _CrearTicketState extends State<CrearTicket>{
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-    ticketsData.add('${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}');
+    ticketsData.add('${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
     await prefs.setStringList('tickets', ticketsData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
