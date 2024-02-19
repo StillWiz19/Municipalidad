@@ -29,7 +29,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
         widget.equipos.clear();
         widget.equipos.addAll(equiposData.map((data) {
           List<String> equipoData = data.split('|');
-          if (equipoData.length >= 11) {
+          if (equipoData.length >= 12) {
             return Equipo(
               modelo: equipoData[0],
               numeroSerie: equipoData[1],
@@ -37,11 +37,12 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               marca: equipoData[3],
               ram: equipoData[4],
               almacenamiento: equipoData[5],
-              departamento: equipoData[6],
-              direccion: equipoData[7],
-              sistemaOperativo: equipoData[8],
-              versionOffice: equipoData[9],
-              descripcion: equipoData[10],
+              precesador: equipoData[6],
+              departamento: equipoData[7],
+              direccion: equipoData[8],
+              sistemaOperativo: equipoData[9],
+              versionOffice: equipoData[10],
+              descripcion: equipoData[11],
             );
           } else {
             return Equipo(
@@ -51,6 +52,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               marca: 'Lenovo',
               ram: '4GB',
               almacenamiento: '1TB',
+              precesador: 'Intel Core i3',
               departamento: 'Administración',
               direccion: 'No se',
               sistemaOperativo: 'Windows 10',
@@ -77,12 +79,12 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   Future<void> _eliminarEquipo(int index) async {
     setState(() {
       widget.equipos.removeAt(index);
-      _filteredEquipos.removeAt(index); // Remover de la lista filtrada también
+      _filteredEquipos.removeAt(index); 
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.precesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
@@ -145,6 +147,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
                               Text('Marca: ${equipo.marca}'),
                               Text('Ram: ${equipo.ram}'),
                               Text('Almacenamiento: ${equipo.almacenamiento}'),
+                              Text('Procesador: ${equipo.precesador}'),
                               Text('Departamento: ${equipo.departamento}'),
                               Text('Direccion: ${equipo.direccion}'),
                               Text('Sistema Operativo: ${equipo.sistemaOperativo}'),

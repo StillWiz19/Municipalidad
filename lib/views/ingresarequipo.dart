@@ -9,6 +9,7 @@ class Equipo {
   final String marca;
   final String ram;
   final String almacenamiento;
+  final String precesador;
   final String departamento;
   final String direccion;
   final String sistemaOperativo;
@@ -22,6 +23,7 @@ class Equipo {
     required this.marca,
     required this.ram,
     required this.almacenamiento,
+    required this.precesador,
     required this.departamento,
     required this.direccion,
     required this.sistemaOperativo,
@@ -36,6 +38,7 @@ TextEditingController _numeroInventarioController = TextEditingController();
 TextEditingController _marcaController = TextEditingController();
 TextEditingController _ramController = TextEditingController();
 TextEditingController _almacenController = TextEditingController();
+TextEditingController _procesadorController = TextEditingController();
 TextEditingController _departamentoController = TextEditingController();
 TextEditingController _direccionController = TextEditingController();
 TextEditingController _sistemaOperativoController = TextEditingController();
@@ -67,6 +70,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     _marcaController = TextEditingController();
     _ramController = TextEditingController();
     _almacenController = TextEditingController();
+    _procesadorController = TextEditingController();
     _departamentoController = TextEditingController();
     _direccionController = TextEditingController();
     _sistemaOperativoController = TextEditingController();
@@ -81,6 +85,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     String marca = _marcaController.text;
     String ram = _ramController.text;
     String almacenamiento = _almacenController.text;
+    String procesador = _procesadorController.text;
     String departamento = _departamentoController.text;
     String direccion = _direccionController.text;
     String sistemaOperativo = _sistemaOperativoController.text;
@@ -94,6 +99,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       marca: marca,
       ram: ram,
       almacenamiento: almacenamiento,
+      precesador: procesador,
       departamento: departamento,
       direccion: direccion,
       sistemaOperativo: sistemaOperativo,
@@ -104,7 +110,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.precesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
     await prefs.setStringList('equipos', equiposData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -118,6 +124,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     _marcaController.clear();
     _ramController.clear();
     _almacenController.clear();
+    _procesadorController.clear();
     _departamentoController.clear();
     _direccionController.clear();
     _sistemaOperativoController.clear();
@@ -224,7 +231,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
                 controller: _ramController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Ram",
+                  labelText: "Tipo Ram",
                 ),
               ),
             ),
@@ -234,7 +241,17 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
                 controller: _almacenController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: "Almacenamiento",
+                  labelText: "Tipo Disco Duro",
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: TextField(
+                controller: _procesadorController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Procesador",
                 ),
               ),
             ),

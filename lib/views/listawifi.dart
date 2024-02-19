@@ -11,15 +11,18 @@ class ListarWifi extends StatefulWidget {
   _ListarWifiState createState() => _ListarWifiState();
 }
 
-
-class _ListarWifiState extends State<ListarWifi>{
+class _ListarWifiState extends State<ListarWifi> {
   List<Wifi> claveswifi = [];
+  List<Wifi> claveswifiFiltradas = [];
+
+  TextEditingController _controller = TextEditingController();
 
   @override
-void initState(){
-  super.initState();
-  _cargarDatos();
-}
+  void initState() {
+    super.initState();
+    _cargarDatos();
+    claveswifiFiltradas = List.from(claveswifi);
+  }
 
   Future<void> _cargarDatos() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -39,12 +42,20 @@ void initState(){
   Future<void> _eliminarClaveWifi(int index) async {
     setState(() {
       claveswifi.removeAt(index);
+      claveswifiFiltradas.removeAt(index);
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('wifi', 
-        claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
-  } 
+    await prefs.setStringList('wifi', claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
+  }
+
+  void _filtrarClavesWifi(String query) {
+    setState(() {
+      claveswifiFiltradas = claveswifi.where((wifi) =>
+          wifi.nombreRed.toLowerCase().contains(query.toLowerCase()) ||
+          wifi.departamento.toLowerCase().contains(query.toLowerCase())).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,45 +76,58 @@ void initState(){
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView.builder(
-                itemCount: claveswifi.length,
-                itemBuilder: (context, index) {
-                  final wifi = claveswifi[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(wifi.nombreRed),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 8),
-                            Text('Nombre de Red: ${wifi.nombreRed}'),
-                            Text('Departamento: ${wifi.departamento}'),
-                            Text('Contraseña: ${wifi.contrasenia}'),
-                          ],
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _controller,
+                  onChanged: _filtrarClavesWifi,
+                  decoration: InputDecoration(
+                    labelText: 'Buscar',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: claveswifiFiltradas.length,
+                  itemBuilder: (context, index) {
+                    final wifi = claveswifiFiltradas[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _eliminarClaveWifi(index),
+                        child: ListTile(
+                          title: Text(wifi.nombreRed),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 8),
+                              Text('Nombre de Red: ${wifi.nombreRed}'),
+                              Text('Departamento: ${wifi.departamento}'),
+                              Text('Contraseña: ${wifi.contrasenia}'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _eliminarClaveWifi(index),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
-            ),
-          ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
 

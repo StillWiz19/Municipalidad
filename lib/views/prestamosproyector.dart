@@ -89,7 +89,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
                             Text('N° de Serie: ${prestamo.numeroSerie}'),
                             Text('Usuario: ${prestamo.usuario}'),
                             Text('Departamento: ${prestamo.departamento}'),
-                            Text('¿Para que será el uso del proyector?: ${prestamo.motivo}'),
+                            Text('Motivos: ${prestamo.motivo}'),
                             Text('Fecha de Prestamo: ${prestamo.fecha}'),
                           ],
                         ),

@@ -105,7 +105,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
 @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Prestamos de Proyectores')),
+      appBar: AppBar(title: Text('Prestamos')),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.all(5.0),
@@ -113,7 +113,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
             controller: _numeroSerieController,
             decoration:InputDecoration(
               border: OutlineInputBorder(),
-              labelText: "N° de Serie Proyector"
+              labelText: "N° de Serie"
             ) ,
           ),
         ),
@@ -143,7 +143,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
             controller: _motivoController,
               decoration:InputDecoration(
                 border: OutlineInputBorder(),
-                labelText: "¿Para que será el uso del proyector?"
+                labelText: "Motivos"
               ) ,
             ),
         ),
