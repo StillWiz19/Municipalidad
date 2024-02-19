@@ -13,11 +13,15 @@ class ListaInventario extends StatefulWidget {
 
 class _ListaInventarioState extends State<ListaInventario> {
   List<Inventario> inventarios = [];
+  late List<Inventario> inventariosFiltrados = []; // Inicializa la lista de inventarios filtrados
+
+  TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _cargarDatos();
+    inventariosFiltrados = List.from(inventarios); // Inicializa inventariosFiltrados con la lista de inventarios
   }
 
   Future<void> _cargarDatos() async {
@@ -39,11 +43,18 @@ class _ListaInventarioState extends State<ListaInventario> {
   Future<void> _eliminarInventario(int index) async {
     setState(() {
       inventarios.removeAt(index);
+      inventariosFiltrados.removeAt(index);
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('inventarios',
         inventarios.map((inventario) => '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.nombreProducto}|${inventario.tipoProducto}').toList());
+  }
+
+  void _filtrarInventarios(String query) {
+    setState(() {
+      inventariosFiltrados = inventarios.where((inventario) => inventario.numeroInventario.toLowerCase().contains(query.toLowerCase())).toList();
+    });
   }
 
   @override
@@ -61,48 +72,61 @@ class _ListaInventarioState extends State<ListaInventario> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue[200]!, Colors.green[200]!], 
+                colors: [Colors.blue[200]!, Colors.green[200]!],
               ),
             ),
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ListView.builder(
-                itemCount: inventarios.length,
-                itemBuilder: (context, index) {
-                  final inventario = inventarios[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        title: Text(inventario.nombreProducto),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 8),
-                            Text('N° de Serie: ${inventario.numeroSerie}'),
-                            Text('N° de Inventario: ${inventario.numeroInventario}'),
-                            Text('Tipo Producto: ${inventario.tipoProducto}'),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _eliminarInventario(index),
-                        ),
-                      ),
-                    ),
-                  );
-                },
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _controller,
+                  onChanged: _filtrarInventarios,
+                  decoration: InputDecoration(
+                    labelText: 'Buscar',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
               ),
-            ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: inventariosFiltrados.length,
+                  itemBuilder: (context, index) {
+                    final inventario = inventariosFiltrados[index];
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ListTile(
+                          title: Text(inventario.nombreProducto),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 8),
+                              Text('N° de Serie: ${inventario.numeroSerie}'),
+                              Text('N° de Inventario: ${inventario.numeroInventario}'),
+                              Text('Tipo Producto: ${inventario.tipoProducto}'),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _eliminarInventario(index),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
