@@ -9,7 +9,7 @@ class Equipo {
   final String marca;
   final String ram;
   final String almacenamiento;
-  final String precesador;
+  final String procesador;
   final String departamento;
   final String direccion;
   final String sistemaOperativo;
@@ -23,7 +23,7 @@ class Equipo {
     required this.marca,
     required this.ram,
     required this.almacenamiento,
-    required this.precesador,
+    required this.procesador,
     required this.departamento,
     required this.direccion,
     required this.sistemaOperativo,
@@ -32,27 +32,14 @@ class Equipo {
   });
 }
 
-TextEditingController _modeloController = TextEditingController();
-TextEditingController _numeroSerieController = TextEditingController();
-TextEditingController _numeroInventarioController = TextEditingController();
-TextEditingController _marcaController = TextEditingController();
-TextEditingController _ramController = TextEditingController();
-TextEditingController _almacenController = TextEditingController();
-TextEditingController _procesadorController = TextEditingController();
-TextEditingController _departamentoController = TextEditingController();
-TextEditingController _direccionController = TextEditingController();
-TextEditingController _sistemaOperativoController = TextEditingController();
-TextEditingController _versionOfficeController = TextEditingController();
-TextEditingController _descripcionController = TextEditingController();
-
 class IngresarEquipo extends StatefulWidget {
   const IngresarEquipo({Key? key}) : super(key: key);
 
   @override
-  _IngresaEquipoState createState() => _IngresaEquipoState();
+  _IngresarEquipoState createState() => _IngresarEquipoState();
 }
 
-class _IngresaEquipoState extends State<IngresarEquipo> {
+class _IngresarEquipoState extends State<IngresarEquipo> {
   List<String> modelos = [
     'Ideapad',
     'Victus',
@@ -62,21 +49,156 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
 
   String? _selectedModelo;
 
+  TextEditingController _numeroSerieController = TextEditingController();
+  TextEditingController _numeroInventarioController = TextEditingController();
+  TextEditingController _marcaController = TextEditingController();
+  TextEditingController _ramController = TextEditingController();
+  TextEditingController _almacenController = TextEditingController();
+  TextEditingController _procesadorController = TextEditingController();
+  TextEditingController _departamentoController = TextEditingController();
+  TextEditingController _direccionController = TextEditingController();
+  TextEditingController _sistemaOperativoController = TextEditingController();
+  TextEditingController _versionOfficeController = TextEditingController();
+  TextEditingController _descripcionController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
-  void initState() {
-    _modeloController = TextEditingController();
-    _numeroSerieController = TextEditingController();
-    _numeroInventarioController = TextEditingController();
-    _marcaController = TextEditingController();
-    _ramController = TextEditingController();
-    _almacenController = TextEditingController();
-    _procesadorController = TextEditingController();
-    _departamentoController = TextEditingController();
-    _direccionController = TextEditingController();
-    _sistemaOperativoController = TextEditingController();
-    _versionOfficeController = TextEditingController();
-    _descripcionController = TextEditingController();
-    super.initState();
+  void dispose() {
+    _numeroSerieController.dispose();
+    _numeroInventarioController.dispose();
+    _marcaController.dispose();
+    _ramController.dispose();
+    _almacenController.dispose();
+    _procesadorController.dispose();
+    _departamentoController.dispose();
+    _direccionController.dispose();
+    _sistemaOperativoController.dispose();
+    _versionOfficeController.dispose();
+    _descripcionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Ingresar Equipo', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        backgroundColor: Color.fromARGB(255, 43, 74, 165),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedModelo,
+                items: modelos.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  setState(() {
+                    _selectedModelo = value;
+                    _rellenarDatos(value!);
+                  });
+                },
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Modelo',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor selecciona un modelo';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              _buildTextFormField(
+                controller: _numeroSerieController,
+                labelText: "N° de Serie",
+              ),
+              _buildTextFormField(
+                controller: _numeroInventarioController,
+                labelText: "N° de Inventario",
+              ),
+              _buildTextFormField(
+                controller: _marcaController,
+                labelText: "Marca",
+              ),
+              _buildTextFormField(
+                controller: _ramController,
+                labelText: "Tipo Ram",
+              ),
+              _buildTextFormField(
+                controller: _almacenController,
+                labelText: "Tipo Disco Duro",
+              ),
+              _buildTextFormField(
+                controller: _procesadorController,
+                labelText: "Procesador",
+              ),
+              _buildTextFormField(
+                controller: _departamentoController,
+                labelText: "Departamento",
+              ),
+              _buildTextFormField(
+                controller: _direccionController,
+                labelText: "Dirección",
+              ),
+              _buildTextFormField(
+                controller: _sistemaOperativoController,
+                labelText: "Sistema Operativo",
+              ),
+              _buildTextFormField(
+                controller: _versionOfficeController,
+                labelText: "Versión Office",
+              ),
+              _buildTextFormField(
+                controller: _descripcionController,
+                labelText: "Descripción",
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _guardarDatos(context);
+                  }
+                },
+                child: Text("Guardar"),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: labelText,
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
   }
 
   void _guardarDatos(BuildContext context) async {
@@ -99,7 +221,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       marca: marca,
       ram: ram,
       almacenamiento: almacenamiento,
-      precesador: procesador,
+      procesador: procesador,
       departamento: departamento,
       direccion: direccion,
       sistemaOperativo: sistemaOperativo,
@@ -110,7 +232,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.precesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
     await prefs.setStringList('equipos', equiposData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -118,18 +240,8 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       ListadoEquipo listadoEquipo = arguments;
       listadoEquipo.equipos.add(equipo);
     }
-    _modeloController.clear();
-    _numeroSerieController.clear();
-    _numeroInventarioController.clear();
-    _marcaController.clear();
-    _ramController.clear();
-    _almacenController.clear();
-    _procesadorController.clear();
-    _departamentoController.clear();
-    _direccionController.clear();
-    _sistemaOperativoController.clear();
-    _versionOfficeController.clear();
-    _descripcionController.clear();
+
+    _limpiarCampos();
 
     showDialog(
       context: context,
@@ -150,6 +262,21 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
     );
   }
 
+  void _limpiarCampos() {
+    _numeroSerieController.clear();
+    _numeroInventarioController.clear();
+    _marcaController.clear();
+    _ramController.clear();
+    _almacenController.clear();
+    _procesadorController.clear();
+    _departamentoController.clear();
+    _direccionController.clear();
+    _sistemaOperativoController.clear();
+    _versionOfficeController.clear();
+    _descripcionController.clear();
+
+  }
+
   Future<void> _rellenarDatos(String modelo) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? equiposData = prefs.getStringList('equipos') ?? [];
@@ -163,159 +290,7 @@ class _IngresaEquipoState extends State<IngresarEquipo> {
       }
     }
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Ingresar Equipo")),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: DropdownButtonFormField<String>(
-                value: _selectedModelo,
-                items: modelos.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedModelo = value;
-                    _rellenarDatos(value!); 
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Modelo',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _numeroSerieController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "N° de Serie",
-                  prefixIcon: Icon(Icons.numbers),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _numeroInventarioController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "N° de Inventario",
-                  prefixIcon: Icon(Icons.numbers),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _marcaController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Marca",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _ramController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Tipo Ram",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _almacenController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Tipo Disco Duro",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _procesadorController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Procesador",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _departamentoController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Departamento",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _direccionController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Direccion",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _sistemaOperativoController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Sistema Operativo",
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _versionOfficeController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Version Office",
-                ),
-              ),
-            ),
-             Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: TextField(
-                controller: _descripcionController,
-                maxLines: null,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Descripción",
-                ),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _guardarDatos(context);
-              },
-              child: Text("Guardar"),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 }
+
+
 

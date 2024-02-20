@@ -90,7 +90,10 @@ class _IngresarInventarioState extends State<IngresarInventario>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Registrar Inventario')),
+      appBar: AppBar(title: Text('Registrar Inventario', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+      backgroundColor: Color.fromARGB(255, 43, 74, 165),
+      centerTitle: true,
+      ),
       body: Column(
         children: [
           Padding(

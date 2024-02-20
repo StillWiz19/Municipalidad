@@ -105,7 +105,10 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
 @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Prestamos')),
+      appBar: AppBar(title: Text('Prestamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+      backgroundColor: Color.fromARGB(255, 43, 74, 165),
+      centerTitle: true,
+      ),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.all(5.0),

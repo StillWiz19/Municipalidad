@@ -37,7 +37,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             marca: equipoData[3],
             ram: equipoData[4],
             almacenamiento: equipoData[5],
-            precesador: equipoData[6],
+            procesador: equipoData[6],
             departamento: equipoData[7],
             direccion: equipoData[8],
             sistemaOperativo: equipoData[9],
@@ -68,7 +68,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.precesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
@@ -131,7 +131,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
                               Text('Marca: ${equipo.marca}'),
                               Text('Ram: ${equipo.ram}'),
                               Text('Almacenamiento: ${equipo.almacenamiento}'),
-                              Text('Procesador: ${equipo.precesador}'),
+                              Text('Procesador: ${equipo.procesador}'),
                               Text('Departamento: ${equipo.departamento}'),
                               Text('Direccion: ${equipo.direccion}'),
                               Text('Sistema Operativo: ${equipo.sistemaOperativo}'),
