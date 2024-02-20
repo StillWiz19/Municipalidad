@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/claveswifi.dart';
+import 'package:muniinventario/wifi/claveswifi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListarWifi extends StatefulWidget {

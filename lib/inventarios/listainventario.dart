@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:muniinventario/views/ingresoinventario.dart';
+import 'package:muniinventario/inventarios/ingresoinventario.dart';
 
 class ListaInventario extends StatefulWidget {
   final List<Inventario> inventarios;

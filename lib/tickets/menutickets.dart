@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/creartickets.dart';
-import 'package:muniinventario/views/listatickets.dart';
+import 'package:muniinventario/tickets/creartickets.dart';
+import 'package:muniinventario/tickets/listatickets.dart';
 
 class MenuTickets extends StatelessWidget {
   @override

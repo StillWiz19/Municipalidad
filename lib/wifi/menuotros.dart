@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/prestamosproyector.dart';
-import 'package:muniinventario/views/registrarprestamoss.dart';
+import 'package:muniinventario/wifi/claveswifi.dart';
+import 'package:muniinventario/wifi/listawifi.dart';
 
-class MenuPrestamos extends StatelessWidget {
+class MenuOtros extends StatelessWidget {
   @override
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
@@ -37,10 +37,10 @@ class MenuPrestamos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Prestamo> prestamos = [];
+    List<Wifi> claveswifi = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Prestamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        title: Text('Menu Equipos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
         backgroundColor: Colors.blue[900], 
         centerTitle: true, 
       ),
@@ -59,8 +59,8 @@ class MenuPrestamos extends StatelessWidget {
           mainAxisSpacing: 16, 
           crossAxisSpacing: 16, 
           children: [
-            _buildMenuItem(context, Icons.app_registration, 'Registrar Prestamos', RegistrarPrestamos()),
-            _buildMenuItem(context, Icons.school, 'Prestamos Proyector', PrestamosProyector(prestamos: prestamos)),
+            _buildMenuItem(context, Icons.wifi, 'Agregar Claves WIFI', ClavesWifi()),
+            _buildMenuItem(context, Icons.wifi_1_bar, 'Listas WIFI', ListarWifi(claveswifi: claveswifi)),
           ],
         ),
       ),

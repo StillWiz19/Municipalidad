@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/listawifi.dart';
+import 'package:muniinventario/wifi/listawifi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Wifi {

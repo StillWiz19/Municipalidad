@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/claveswifi.dart';
-import 'package:muniinventario/views/listawifi.dart';
+import 'package:muniinventario/wifi/menuotros.dart';
+import 'package:muniinventario/equipos/menurequipos.dart';
+import 'package:muniinventario/prestamos/menuprestamos.dart';
+import 'package:muniinventario/tickets/menutickets.dart';
 
-class MenuOtros extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
-      return Container();
+      return Container(); 
     }
     return InkWell(
       onTap: () {
@@ -27,7 +29,7 @@ class MenuOtros extends StatelessWidget {
             children: [
               Icon(icon, size: 48, color: Colors.blue[900]), 
               SizedBox(height: 8),
-              Text(label, style: TextStyle(fontSize: 16, color: Colors.blue[900], fontFamily: 'Roboto')),  
+              Text(label, style: TextStyle(fontSize: 16, color: Colors.blue[900])), 
             ],
           ),
         ),
@@ -37,11 +39,10 @@ class MenuOtros extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Wifi> claveswifi = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Equipos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-        backgroundColor: Colors.blue[900], 
+        title: Text('Menu Principal', textAlign: TextAlign.center),
+        backgroundColor: Colors.lightBlue[900], 
         centerTitle: true, 
       ),
       body: Container(
@@ -59,11 +60,15 @@ class MenuOtros extends StatelessWidget {
           mainAxisSpacing: 16, 
           crossAxisSpacing: 16, 
           children: [
-            _buildMenuItem(context, Icons.wifi, 'Agregar Claves WIFI', ClavesWifi()),
-            _buildMenuItem(context, Icons.wifi_1_bar, 'Listas WIFI', ListarWifi(claveswifi: claveswifi)),
+            _buildMenuItem(context, Icons.work, 'Ticket Soporte', MenuTickets()),
+            _buildMenuItem(context, Icons.school, 'Prestamos', MenuPrestamos()),
+            _buildMenuItem(context, Icons.inventory_outlined, 'Registrar Equipos', RegistrarEquipos()),
+            _buildMenuItem(context, Icons.computer_outlined, 'Otros', MenuOtros()),
           ],
         ),
       ),
     );
   }
 }
+
+

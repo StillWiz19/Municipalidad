@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/listatickets.dart';
+import 'package:muniinventario/tickets/listatickets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Ticket {

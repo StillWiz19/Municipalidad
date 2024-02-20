@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/listadoequipos.dart';
+import 'package:muniinventario/equipos/listadoequipos.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Equipo {

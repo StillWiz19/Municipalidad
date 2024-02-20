@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/registrarprestamoss.dart';
+import 'package:muniinventario/prestamos/registrarprestamoss.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrestamosProyector extends StatefulWidget {

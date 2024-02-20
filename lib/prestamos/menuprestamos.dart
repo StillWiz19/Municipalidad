@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/menuotros.dart';
-import 'package:muniinventario/views/menurequipos.dart';
-import 'package:muniinventario/views/menuprestamos.dart';
-import 'package:muniinventario/views/menutickets.dart';
+import 'package:muniinventario/prestamos/prestamosproyector.dart';
+import 'package:muniinventario/prestamos/registrarprestamoss.dart';
 
-class HomePage extends StatelessWidget {
+class MenuPrestamos extends StatelessWidget {
   @override
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
-      return Container(); 
+      return Container();
     }
     return InkWell(
       onTap: () {
@@ -29,7 +27,7 @@ class HomePage extends StatelessWidget {
             children: [
               Icon(icon, size: 48, color: Colors.blue[900]), 
               SizedBox(height: 8),
-              Text(label, style: TextStyle(fontSize: 16, color: Colors.blue[900])), 
+              Text(label, style: TextStyle(fontSize: 16, color: Colors.blue[900], fontFamily: 'Roboto')),  
             ],
           ),
         ),
@@ -39,10 +37,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Prestamo> prestamos = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Principal', textAlign: TextAlign.center),
-        backgroundColor: Colors.lightBlue[900], 
+        title: Text('Menu Prestamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        backgroundColor: Colors.blue[900], 
         centerTitle: true, 
       ),
       body: Container(
@@ -60,15 +59,11 @@ class HomePage extends StatelessWidget {
           mainAxisSpacing: 16, 
           crossAxisSpacing: 16, 
           children: [
-            _buildMenuItem(context, Icons.work, 'Ticket Soporte', MenuTickets()),
-            _buildMenuItem(context, Icons.school, 'Prestamos', MenuPrestamos()),
-            _buildMenuItem(context, Icons.inventory_outlined, 'Registrar Equipos', RegistrarEquipos()),
-            _buildMenuItem(context, Icons.computer_outlined, 'Otros', MenuOtros()),
+            _buildMenuItem(context, Icons.app_registration, 'Registrar Prestamos', RegistrarPrestamos()),
+            _buildMenuItem(context, Icons.school, 'Prestamos Proyector', PrestamosProyector(prestamos: prestamos)),
           ],
         ),
       ),
     );
   }
 }
-
-
