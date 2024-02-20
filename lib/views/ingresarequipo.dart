@@ -3,6 +3,7 @@ import 'package:muniinventario/db_helper/db_helper.dart';
 import 'package:muniinventario/views/listadoequipos.dart';
 
 class Equipo {
+  final String id;
   final String modelo;
   final String numeroSerie;
   final String numeroInventario;
@@ -15,6 +16,7 @@ class Equipo {
   final String versionOffice;
 
   Equipo({
+    required this.id,
     required this.modelo,
     required this.numeroSerie,
     required this.numeroInventario,

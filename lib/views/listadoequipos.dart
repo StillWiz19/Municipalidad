@@ -26,6 +26,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       List<dynamic> data = json.decode(response.body);
       setState(() {
         equipos = data.map((json) => Equipo(
+              id: json['id'],
               modelo: json['modelo'],
               numeroSerie: json['numserie'],
               numeroInventario: json['numinventario'],
@@ -44,9 +45,18 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _eliminarEquipo(int index) async {
-    setState(() {
-      equipos.removeAt(index);
-    });
+    final response = await http.post(Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'),
+      body: {'id': equipos[index].id},
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        equipos.removeAt(index);
+      });
+      print('Equipo eliminado');
+    } else {
+      print('Error al eliminar el equipo: ${response.statusCode}');
+    }
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
