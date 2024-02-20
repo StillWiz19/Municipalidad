@@ -28,30 +28,19 @@ class ClavesWifi extends StatefulWidget{
 
 class _ClavesWifiState extends State<ClavesWifi>{
   void _guardarDatos(BuildContext context) async {
-    String nombreRed = _nombreRedController.text;
-    String departamento = _departamentoController.text;
-    String contrasenia = _contraseniaController.text;
+    Db_helper db = Db_helper();
 
-    Wifi wifi = Wifi(
-      nombreRed: nombreRed,
-      departamento: departamento,
-      contrasenia: contrasenia,
+    db.registrarClave(
+      _nombreRedController.text,
+      _departamentoController.text,
+      _contraseniaController.text
     );
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> wifiData = prefs.getStringList('wifi') ?? [];
-    wifiData.add('${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}');
-    await prefs.setStringList('wifi', wifiData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListarWifi) {
-      ListarWifi listarWifi = arguments;
-      listarWifi.claveswifi.add(wifi);
+    void _limpiarCajas() {
+      _nombreRedController.clear();
+      _departamentoController.clear();
+      _contraseniaController.clear(); 
     }
-
-    _nombreRedController.clear();
-    _departamentoController.clear();
-    _contraseniaController.clear();
 
     showDialog(
       context: context,
@@ -70,6 +59,7 @@ class _ClavesWifiState extends State<ClavesWifi>{
         );
       },
     );
+    _limpiarCajas();
   }
 
    @override

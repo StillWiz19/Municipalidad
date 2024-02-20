@@ -31,33 +31,21 @@ class CrearTicket extends StatefulWidget {
 
 class _CrearTicketState extends State<CrearTicket>{
   void _guardarDatos(BuildContext context) async {
-    String numeroTicket = _numeroTicketController.text;
-    String usuario = _usuarioController.text;
-    String departamento = _departamentoController.text;
-    String solicitud = _solicitudController.text;
+    Db_helper db = Db_helper();
 
-    Ticket ticket = Ticket(
-      numeroTicket: numeroTicket,
-      usuario: usuario,
-      departamento: departamento,
-      solicitud: solicitud,
-    );
+    db.crearTicket(
+      _numeroTicketController.text,
+      _usuarioController.text,
+      _departamentoController.text,
+      _solicitudController.text
+    ); 
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-    ticketsData.add('${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}');
-    await prefs.setStringList('tickets', ticketsData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListaTickets) {
-      ListaTickets listaTickets = arguments;
-      listaTickets.tickets.add(ticket);
+    void _limpiarCajas() {
+      _numeroTicketController.clear();
+      _usuarioController.clear();
+      _departamentoController.clear();
+      _solicitudController.clear();
     }
-
-    _numeroTicketController.clear();
-    _usuarioController.clear();
-    _departamentoController.clear();
-    _solicitudController.clear();
 
     showDialog(
       context: context,
@@ -76,6 +64,7 @@ class _CrearTicketState extends State<CrearTicket>{
         );
       },
     );
+    _limpiarCajas();
   }
 
   @override

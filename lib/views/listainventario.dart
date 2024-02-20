@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/ingresoinventario.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ListaInventario extends StatefulWidget {
   final List<Inventario> inventarios;
-
   ListaInventario({required this.inventarios});
 
   @override
@@ -21,29 +21,27 @@ class _ListaInventarioState extends State<ListaInventario> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-    setState(() {
-      inventarios = inventariosData.map((data) {
-        List<String> inventarioData = data.split('|');
-        return Inventario(
-          numeroSerie: inventarioData[0],
-          numeroInventario: inventarioData[1],
-          nombreProducto: inventarioData[2],
-          tipoProducto: inventarioData[3],
-        );
-      }).toList();
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_inventario.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        inventarios = data.map((json) => Inventario(
+              numeroSerie: json['numserie'],
+              numeroInventario: json['numinventario'],
+              nombreProducto: json['nombreprod'],
+              tipoProducto: json['tipoprod']
+            )).toList();
+      });
+    } else {
+      print ('Error: ${response.statusCode}');
+    }
   }
 
   Future<void> _eliminarInventario(int index) async {
     setState(() {
       inventarios.removeAt(index);
     });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('inventarios',
-        inventarios.map((inventario) => '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.nombreProducto}|${inventario.tipoProducto}').toList());
   }
 
   @override

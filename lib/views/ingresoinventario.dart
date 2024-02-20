@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/listainventario.dart';
 
 class Inventario {
@@ -31,34 +30,21 @@ class IngresarInventario extends StatefulWidget {
 
 class _IngresarInventarioState extends State<IngresarInventario>{
   void _guardarDatos(BuildContext context) async {
-    String numeroSerie = _numeroSerieController.text;
-    String numeroInventario = _numeroInventarioController.text;
-    String nombreProducto = _nombreProductoController.text;
-    String tipoProducto = _tipoProductoController.text;
+    Db_helper db = Db_helper();
 
-    Inventario inventario = Inventario(
-      numeroSerie: numeroSerie,
-      numeroInventario: numeroInventario,
-      nombreProducto: nombreProducto,
-      tipoProducto: tipoProducto,
-    );
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-    inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.nombreProducto}|${inventario.tipoProducto}');
-    await prefs.setStringList('inventarios', inventariosData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListaInventario) {
-      ListaInventario listaInventario = arguments;
-      listaInventario.inventarios.add(inventario);
+    db.ingresarInventario(
+      _numeroSerieController.text,
+      _numeroInventarioController.text,
+      _nombreProductoController.text,
+      _tipoProductoController.text,
+    );  
+      
+    void _limpiarCajas(){
+      _numeroSerieController.clear();
+      _numeroInventarioController.clear();
+      _nombreProductoController.clear();
+      _tipoProductoController.clear();
     }
-    
-
-    _numeroSerieController.clear();
-    _numeroInventarioController.clear();
-    _nombreProductoController.clear();
-    _tipoProductoController.clear();
 
     showDialog(
       context: context,
@@ -77,6 +63,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
         );
       },
     );
+    _limpiarCajas();
   }
 
   @override

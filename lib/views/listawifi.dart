@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/claveswifi.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ListarWifi extends StatefulWidget {
   final List<Wifi> claveswifi;
@@ -22,35 +23,33 @@ void initState(){
 }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> wifiData = prefs.getStringList('wifi') ?? [];
-    setState(() {
-      claveswifi = wifiData.map((data) {
-        List<String> wifiData = data.split('|');
-        return Wifi(
-          nombreRed: wifiData[0],
-          departamento: wifiData[1],
-          contrasenia: wifiData[2],
-        );
-      }).toList();
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_redes.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        claveswifi = data.map((json) => Wifi(
+          nombreRed: json['nombrered'],
+          departamento: json['departamento'],
+          contrasenia: json['password']
+          )).toList();
+      });
+    } else {
+      print ('Error: ${response.statusCode}');
+    }
   }
 
   Future<void> _eliminarClaveWifi(int index) async {
     setState(() {
       claveswifi.removeAt(index);
     });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('wifi', 
-        claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
   } 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de las claves WIFI', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        title: Text('Lista de claves WIFI', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
         backgroundColor: Colors.blue[900],
         centerTitle: true,
       ),

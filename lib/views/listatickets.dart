@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/creartickets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ListaTickets extends StatefulWidget {
   final List<Ticket> tickets;
@@ -21,29 +22,27 @@ class _ListaTicketState extends State<ListaTickets>{
   }
 
   Future<void> _cargarDatos() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-    setState(() {
-      tickets = ticketsData.map((data){
-        List<String> ticketsData = data.split('|');
-        return Ticket(
-          numeroTicket: ticketsData[0],
-          usuario: ticketsData[1],
-          departamento: ticketsData[2],
-          solicitud: ticketsData[3],
-        );
-      }).toList();
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_ticket.php'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      setState(() {
+        tickets = data.map((json) => Ticket(
+              numeroTicket: json['numticket'],
+              usuario: json['usuario'],
+              departamento: json['departamento'],
+              solicitud: json['solicitud']
+            )).toList();
+      });
+    } else {
+      print ('Error: ${response.statusCode}');
+    }
   }
 
   Future<void> _eliminarTicket(int index) async{
     setState(() {
       tickets.removeAt(index);
     });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('tickets', 
-    tickets.map((ticket) => '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}').toList());
   }
 
   @override
