@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/ingresoinventario.dart';
-
 class ListaInventario extends StatefulWidget {
   final List<Inventario> inventarios;
 
@@ -30,10 +29,11 @@ class _ListaInventarioState extends State<ListaInventario> {
       inventarios = inventariosData.map((data) {
         List<String> inventarioData = data.split('|');
         return Inventario(
-          numeroSerie: inventarioData[0],
-          numeroInventario: inventarioData[1],
-          nombreProducto: inventarioData[2],
-          tipoProducto: inventarioData[3],
+          numeroSerie: inventarioData.length > 0 ? inventarioData[0] : "",
+          numeroInventario: inventarioData.length > 1 ? inventarioData[1] : "",
+          modelo: inventarioData.length > 2 ? inventarioData[2] : "",
+          nombreProducto: inventarioData.length > 3 ? inventarioData[3] : "",
+          tipoProducto: inventarioData.length > 4 ? inventarioData[4] : "",
         );
       }).toList();
       inventariosFiltrados = List.from(inventarios);
@@ -48,7 +48,7 @@ class _ListaInventarioState extends State<ListaInventario> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('inventarios',
-        inventarios.map((inventario) => '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.nombreProducto}|${inventario.tipoProducto}').toList());
+        inventarios.map((inventario) => '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}').toList());
   }
 
   void _filtrarInventarios(String query) {
@@ -111,6 +111,7 @@ class _ListaInventarioState extends State<ListaInventario> {
                               SizedBox(height: 8),
                               Text('N° de Serie: ${inventario.numeroSerie}'),
                               Text('N° de Inventario: ${inventario.numeroInventario}'),
+                              Text('Modelo: ${inventario.modelo}'),
                               Text('Dispositivo: ${inventario.nombreProducto}'),
                               Text('Marca: ${inventario.tipoProducto}'),
                             ],

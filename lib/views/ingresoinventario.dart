@@ -5,12 +5,14 @@ import 'package:muniinventario/views/listainventario.dart';
 class Inventario {
   final String numeroSerie;
   final String numeroInventario;
+  final String modelo;
   final String nombreProducto;
   final String tipoProducto;
 
   Inventario({
     required this.numeroSerie,
     required this.numeroInventario,
+    required this.modelo,
     required this.nombreProducto,
     required this.tipoProducto,
   });
@@ -18,8 +20,10 @@ class Inventario {
 
 TextEditingController _numeroSerieController = TextEditingController();
 TextEditingController _numeroInventarioController = TextEditingController();
+TextEditingController _modeloController = TextEditingController();
 TextEditingController _nombreProductoController = TextEditingController();
 TextEditingController _tipoProductoController = TextEditingController();
+
 
 class IngresarInventario extends StatefulWidget {
   const IngresarInventario({Key? key}) : super(key: key);
@@ -32,19 +36,22 @@ class _IngresarInventarioState extends State<IngresarInventario>{
   void _guardarDatos(BuildContext context) async {
     String numeroSerie = _numeroSerieController.text;
     String numeroInventario = _numeroInventarioController.text;
+    String modelo = _modeloController.text;
     String nombreProducto = _nombreProductoController.text;
     String tipoProducto = _tipoProductoController.text;
 
     Inventario inventario = Inventario(
       numeroSerie: numeroSerie,
       numeroInventario: numeroInventario,
+      modelo: modelo,
       nombreProducto: nombreProducto,
       tipoProducto: tipoProducto,
+
     );
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-    inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.nombreProducto}|${inventario.tipoProducto}');
+    inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}');
     await prefs.setStringList('inventarios', inventariosData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -56,8 +63,10 @@ class _IngresarInventarioState extends State<IngresarInventario>{
 
     _numeroSerieController.clear();
     _numeroInventarioController.clear();
+    _modeloController.clear();
     _nombreProductoController.clear();
     _tipoProductoController.clear();
+
 
     showDialog(
       context: context,
@@ -76,7 +85,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
         );
       },
     );
-  }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +116,16 @@ class _IngresarInventarioState extends State<IngresarInventario>{
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: TextField(
+              controller: _modeloController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Modelo"
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: TextField(
               controller: _nombreProductoController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
@@ -124,6 +143,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
               ),
             ),
           ),
+          
           ElevatedButton(
             onPressed: (){
               _guardarDatos(context);
