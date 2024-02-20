@@ -45,7 +45,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             descripcion: equipoData[11],
           );
         }));
-        _filteredEquipos.addAll(widget.equipos); 
+        _filteredEquipos.addAll(widget.equipos);
       });
     }
   }
@@ -55,7 +55,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       _filteredEquipos = widget.equipos
           .where((equipo) =>
               equipo.modelo.toLowerCase().contains(searchTerm.toLowerCase()) ||
-              equipo.numeroSerie.toLowerCase().contains(searchTerm.toLowerCase())) 
+              equipo.numeroSerie.toLowerCase().contains(searchTerm.toLowerCase()))
           .toList();
     });
   }
@@ -90,12 +90,18 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   Future<void> _confirmarEliminarEquipo(int index) async {
     setState(() {
       widget.equipos.removeAt(index);
-      _filteredEquipos.removeAt(index); 
+      _filteredEquipos.removeAt(index);
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
         '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('El equipo se eliminó correctamente.'),
+      ),
+    );
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {

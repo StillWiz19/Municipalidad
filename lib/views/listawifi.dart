@@ -40,6 +40,33 @@ class _ListarWifiState extends State<ListarWifi> {
   }
 
   Future<void> _eliminarClaveWifi(int index) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Eliminar Clave WiFi"),
+          content: Text("¿Estás seguro de que deseas eliminar esta clave WiFi?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _confirmarEliminarClaveWifi(index);
+              },
+              child: Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmarEliminarClaveWifi(int index) async {
     setState(() {
       claveswifi.removeAt(index);
       claveswifiFiltradas.removeAt(index);
@@ -47,6 +74,12 @@ class _ListarWifiState extends State<ListarWifi> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('wifi', claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('La clave WiFi se eliminó correctamente.'),
+      ),
+    );
   }
 
   void _filtrarClavesWifi(String query) {

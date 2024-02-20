@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/ingresoinventario.dart';
+
 class ListaInventario extends StatefulWidget {
   final List<Inventario> inventarios;
 
@@ -41,14 +42,47 @@ class _ListaInventarioState extends State<ListaInventario> {
   }
 
   Future<void> _eliminarInventario(int index) async {
-    setState(() {
-      inventarios.removeAt(index);
-      inventariosFiltrados.removeAt(index);
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Eliminar Dispositivo"),
+          content: Text("¿Estás seguro de que deseas eliminar este dispositivo?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); 
+              },
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop(); 
+                setState(() {
+                  inventarios.removeAt(index);
+                  inventariosFiltrados.removeAt(index);
+                });
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('inventarios',
-        inventarios.map((inventario) => '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}').toList());
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setStringList(
+                    'inventarios',
+                    inventarios
+                        .map((inventario) =>
+                            '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}')
+                        .toList());
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('El dispositivo se eliminó correctamente.'),
+                  ),
+                );
+              },
+              child: Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _filtrarInventarios(String query) {
