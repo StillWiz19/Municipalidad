@@ -42,6 +42,33 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   }
 
   Future<void> _eliminarPrestamo(int index) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Eliminar Préstamo"),
+          content: Text("¿Estás seguro de que deseas eliminar este préstamo?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _confirmarEliminarPrestamo(index);
+              },
+              child: Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmarEliminarPrestamo(int index) async {
     setState(() {
       prestamos.removeAt(index);
       prestamosFiltrados.removeAt(index);
@@ -50,6 +77,12 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('prestamos',
         prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}').toList());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('El préstamo se eliminó correctamente.'),
+      ),
+    );
   }
 
   void _filtrarPrestamos(String query) {
@@ -66,7 +99,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Prestamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        title: Text('Lista de Préstamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
         backgroundColor: Colors.blue[900],
         centerTitle: true,
       ),
@@ -116,7 +149,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
                               Text('Usuario: ${prestamo.usuario}'),
                               Text('Departamento: ${prestamo.departamento}'),
                               Text('Motivos: ${prestamo.motivo}'),
-                              Text('Fecha de Prestamo: ${prestamo.fecha}'),
+                              Text('Fecha de Préstamo: ${prestamo.fecha}'),
                             ],
                           ),
                           trailing: IconButton(
