@@ -4,32 +4,10 @@ import 'package:muniinventario/views/ingresarequipo.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Equipo {
-  final String modelo;
-  final String numeroSerie;
-  final String numeroInventario;
-  final String marca;
-  final String ram;
-  final String almacenamiento;
-  final String departamento;
-  final String direccion;
-  final String sistemaOperativo;
-  final String versionOffice;
-
-  Equipo({
-    required this.modelo,
-    required this.numeroSerie,
-    required this.numeroInventario,
-    required this.marca,
-    required this.ram,
-    required this.almacenamiento,
-    required this.departamento,
-    required this.direccion,
-    required this.sistemaOperativo,
-    required this.versionOffice
-  });
-}
 class ListadoEquipo extends StatefulWidget {
+  final List<Equipo> equipos;
+  ListadoEquipo({required this.equipos});
+
   @override
   _ListaEquipoState createState() => _ListaEquipoState();
 }
@@ -68,12 +46,8 @@ class _ListaEquipoState extends State<ListadoEquipo> {
 
   Future<void> _eliminarEquipo(int index) async {
     setState(() {
-      widget.equipos.removeAt(index);
+      equipos.removeAt(index);
     });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('equipos',
-        widget.equipos.map((equipo) => '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}').toList());
   }
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
@@ -103,9 +77,9 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: ListView.builder(
-                itemCount: widget.equipos.length,
+                itemCount: equipos.length,
                 itemBuilder: (context, index) {
-                  final equipo = widget.equipos[index];
+                  final equipo = equipos[index];
                   return Padding(
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: Card(
