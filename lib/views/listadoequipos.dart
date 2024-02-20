@@ -61,6 +61,33 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _eliminarEquipo(int index) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Eliminar Equipo"),
+          content: Text("¿Estás seguro de que deseas eliminar este equipo?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _confirmarEliminarEquipo(index);
+              },
+              child: Text("Eliminar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmarEliminarEquipo(int index) async {
     setState(() {
       widget.equipos.removeAt(index);
       _filteredEquipos.removeAt(index); 
