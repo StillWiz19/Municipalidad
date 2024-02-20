@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:muniinventario/wifi/claveswifi.dart';
+import 'package:muniinventario/wifi/editarwifi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ListarWifi extends StatefulWidget {
@@ -90,6 +91,27 @@ class _ListarWifiState extends State<ListarWifi> {
     });
   }
 
+  void _editarClaveWifi(int index) {
+    final wifi = claveswifiFiltradas[index];
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => EditarWifi(
+        wifi: wifi,
+        onSave: (editedWifi) {
+          setState(() {
+            claveswifi[index] = editedWifi;
+            claveswifiFiltradas[index] = editedWifi;
+          });
+          _actualizarDatosSharedPreferences();
+        },
+      ),
+    ));
+  }
+
+  Future<void> _actualizarDatosSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('wifi', claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,9 +167,18 @@ class _ListarWifiState extends State<ListarWifi> {
                               Text('Contraseña: ${wifi.contrasenia}'),
                             ],
                           ),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => _eliminarClaveWifi(index),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () => _editarClaveWifi(index),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () => _eliminarClaveWifi(index),
+                              ),
+                            ],
                           ),
                         ),
                       ),
