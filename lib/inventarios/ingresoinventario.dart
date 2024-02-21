@@ -8,6 +8,7 @@ class Inventario {
   final String modelo;
   final String nombreProducto;
   final String tipoProducto;
+  final String departamento;
 
   Inventario({
     required this.numeroSerie,
@@ -15,15 +16,9 @@ class Inventario {
     required this.modelo,
     required this.nombreProducto,
     required this.tipoProducto,
+    required this.departamento,
   });
 }
-
-TextEditingController _numeroSerieController = TextEditingController();
-TextEditingController _numeroInventarioController = TextEditingController();
-TextEditingController _modeloController = TextEditingController();
-TextEditingController _nombreProductoController = TextEditingController();
-TextEditingController _tipoProductoController = TextEditingController();
-
 
 class IngresarInventario extends StatefulWidget {
   const IngresarInventario({Key? key}) : super(key: key);
@@ -33,59 +28,14 @@ class IngresarInventario extends StatefulWidget {
 }
 
 class _IngresarInventarioState extends State<IngresarInventario>{
-  void _guardarDatos(BuildContext context) async {
-    String numeroSerie = _numeroSerieController.text;
-    String numeroInventario = _numeroInventarioController.text;
-    String modelo = _modeloController.text;
-    String nombreProducto = _nombreProductoController.text;
-    String tipoProducto = _tipoProductoController.text;
+  TextEditingController _numeroSerieController = TextEditingController();
+  TextEditingController _numeroInventarioController = TextEditingController();
+  TextEditingController _modeloController = TextEditingController();
+  TextEditingController _nombreProductoController = TextEditingController();
+  TextEditingController _tipoProductoController = TextEditingController();
+  TextEditingController _departamentoController = TextEditingController();
 
-    Inventario inventario = Inventario(
-      numeroSerie: numeroSerie,
-      numeroInventario: numeroInventario,
-      modelo: modelo,
-      nombreProducto: nombreProducto,
-      tipoProducto: tipoProducto,
-
-    );
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-    inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}');
-    await prefs.setStringList('inventarios', inventariosData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListaInventario) {
-      ListaInventario listaInventario = arguments;
-      listaInventario.inventarios.add(inventario);
-    }
-    
-
-    _numeroSerieController.clear();
-    _numeroInventarioController.clear();
-    _modeloController.clear();
-    _nombreProductoController.clear();
-    _tipoProductoController.clear();
-
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog( 
-          title: Text("Datos Guardados"),
-          content: Text("Los datos han sido guardados correctamente."),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cerrar"),
-            ),
-          ],
-        );
-      },
-    );
-  } 
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -94,70 +44,135 @@ class _IngresarInventarioState extends State<IngresarInventario>{
       backgroundColor: Color.fromARGB(255, 43, 74, 165),
       centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _numeroSerieController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "N° de serie"
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildTextFormField(
+                controller: _numeroSerieController,
+                labelText: "N° de serie",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _numeroInventarioController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "N° de Inventario"
+              _buildTextFormField(
+                controller: _numeroInventarioController,
+                labelText: "N° de Inventario",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _modeloController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Modelo"
+              _buildTextFormField(
+                controller: _modeloController,
+                labelText: "Modelo",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _nombreProductoController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Dispositivo"
+              _buildTextFormField(
+                controller: _nombreProductoController,
+                labelText: "Dispositivo",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _tipoProductoController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Marca"
+              _buildTextFormField(
+                controller: _tipoProductoController,
+                labelText: "Marca",
               ),
-            ),
+              _buildTextFormField(
+                controller: _departamentoController,
+                labelText: "Departamento",
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _guardarDatos(context);
+                  }
+                },
+                child: Text("Guardar"),
+              )
+            ],
           ),
-          
-          ElevatedButton(
-            onPressed: (){
-              _guardarDatos(context);
-            }, 
-            child: Text("Guardar"),
-          )
-        ],
+        ),
       ),
     );
   }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: labelText,
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  void _guardarDatos(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      String numeroSerie = _numeroSerieController.text;
+      String numeroInventario = _numeroInventarioController.text;
+      String modelo = _modeloController.text;
+      String nombreProducto = _nombreProductoController.text;
+      String tipoProducto = _tipoProductoController.text;
+      String departamento = _departamentoController.text;
+
+      Inventario inventario = Inventario(
+        numeroSerie: numeroSerie,
+        numeroInventario: numeroInventario,
+        modelo: modelo,
+        nombreProducto: nombreProducto,
+        tipoProducto: tipoProducto,
+        departamento: departamento,
+      );
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
+      inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.departamento}');
+      await prefs.setStringList('inventarios', inventariosData);
+
+      final arguments = ModalRoute.of(context)!.settings.arguments;
+      if (arguments != null && arguments is ListaInventario) {
+        ListaInventario listaInventario = arguments;
+        listaInventario.inventarios.add(inventario);
+      }
+
+      _limpiarCampos();
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Datos Guardados"),
+            content: Text("Los datos han sido guardados correctamente."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _limpiarCampos() {
+    _numeroSerieController.clear();
+    _numeroInventarioController.clear();
+    _modeloController.clear();
+    _nombreProductoController.clear();
+    _tipoProductoController.clear();
+    _departamentoController.clear();
+  }
 }
+
 
 
 

@@ -43,6 +43,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             sistemaOperativo: equipoData[9],
             versionOffice: equipoData[10],
             descripcion: equipoData[11],
+            imagen: equipoData.length > 12 ? equipoData[12] : '',
           );
         }));
         _filteredEquipos.addAll(widget.equipos);
@@ -95,7 +96,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}|${equipo.imagen}').toList());
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -172,6 +173,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
                               Text('Descripción: ${equipo.descripcion}'),
                             ],
                           ),
+                        
                           trailing: IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () => _eliminarEquipo(index),
