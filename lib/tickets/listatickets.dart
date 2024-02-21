@@ -34,6 +34,7 @@ class _ListaTicketState extends State<ListaTickets>{
           usuario: ticketsData[1],
           departamento: ticketsData[2],
           solicitud: ticketsData[3],
+          aceptado: ticketsData.length > 4 && ticketsData[4] == 'aceptado' ? true : false,
         );
       }).toList();
       filteredTickets.addAll(tickets); 
@@ -41,14 +42,47 @@ class _ListaTicketState extends State<ListaTickets>{
   }
 
   Future<void> _eliminarTicket(int index) async{
+    showDialog(
+      context: context, 
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Eliminar Ticket"),
+          content: Text("¿Estás seguro de que deseas eliminar este ticket?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () async{
+                Navigator.of(context).pop();
+                await _confirmarEliminarTicket(index);
+              },
+              child: Text("Eliminar"),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmarEliminarTicket(int index) async{
     setState(() {
       tickets.removeAt(index);
-      filteredTickets.removeAt(index); 
+      filteredTickets.removeAt(index);
     });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('tickets', 
     tickets.map((ticket) => '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado ? "aceptado" : "rechazado"}').toList());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('El ticket se eliminó correctamente'),
+        )
+    );
   }
 
   void _aceptarTicket(int index) {
