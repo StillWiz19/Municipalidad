@@ -6,7 +6,6 @@ import 'package:muniinventario/inventarios/listainventario.dart';
 
 class RegistrarEquipos extends StatelessWidget {
 
-  @override
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
@@ -28,11 +27,11 @@ class RegistrarEquipos extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 48, color: Colors.blue[900]),
+              Icon(icon, size: 32, color: Colors.blue[900]), // Ajuste del tamaño del ícono
               SizedBox(height: 8),
               Text(label,
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.blue[900],
                       fontFamily: 'Roboto')),
             ],
