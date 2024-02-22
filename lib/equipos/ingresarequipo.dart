@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/equipos/listadoequipos.dart';
+import 'package:muniinventario/equipos/pantallacamara.dart';
+import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Equipo {
   final String modelo;
@@ -29,7 +32,6 @@ class Equipo {
     required this.sistemaOperativo,
     required this.versionOffice,
     required this.descripcion,
-
   });
 }
 
@@ -184,7 +186,20 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
                   }
                 },
                 child: Text("Guardar"),
-              )
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final cameras = await availableCameras();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TakePictureScreen(camera: cameras.first),
+                    ),
+                  );
+                },
+                child: Text("Ir a la Cámara"),
+              ),
             ],
           ),
         ),
@@ -343,5 +358,3 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     );
   }
 }
-
-
