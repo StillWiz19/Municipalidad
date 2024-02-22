@@ -1,8 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/equipos/listadoequipos.dart';
-import 'package:muniinventario/equipos/pantallacamara.dart';
-import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 
 class Equipo {
@@ -66,6 +65,10 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
 
   final _formKey = GlobalKey<FormState>();
 
+  File? _image;
+
+  final picker = ImagePicker();
+
   @override
   void dispose() {
     _numeroSerieController.dispose();
@@ -86,7 +89,11 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ingresar Equipo', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        title: Text(
+          'Ingresar Equipo',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontFamily: 'Roboto'),
+        ),
         backgroundColor: Color.fromARGB(255, 43, 74, 165),
         centerTitle: true,
       ),
@@ -188,18 +195,22 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
                 child: Text("Guardar"),
               ),
               SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  final cameras = await availableCameras();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TakePictureScreen(camera: cameras.first),
-                    ),
-                  );
-                },
-                child: Text("Ir a la Cámara"),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _getImageFromCamera,
+                    child: Text("Cámara"),
+                  ),
+                  SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: _getImageFromGallery,
+                    child: Text("Galería"),
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
+              _image != null ? Image.file(_image!) : SizedBox(),
             ],
           ),
         ),
@@ -302,7 +313,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     _sistemaOperativoController.clear();
     _versionOfficeController.clear();
     _descripcionController.clear();
-
   }
 
   Future<void> _rellenarDatos(String modelo) async {
@@ -357,4 +367,29 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       },
     );
   }
+
+  Future<void> _getImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future<void> _getImageFromGallery() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 }
+
