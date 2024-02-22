@@ -15,14 +15,6 @@ class Equipo {
   final String sistemaOperativo;
   final String versionOffice;
   final String descripcion;
-  final String imagen;
-
-  static Map<String, String> enlacesImagenes = {
-    'Ideapad': 'https://p1-ofp.static.pub/fes/cms/2022/08/17/w05jpb0san0qifkqeq0gg3fpi5ptx3228604.png',
-    'Victus': 'https://serviceone.cl/877-large_default/hp-victus-16-d0511la.jpg',
-    'TufGaming': 'https://dlcdnwebimgs.asus.com/gain/1387056a-60c6-4579-a3f7-ccf65affd7fa/',
-    'ThinkCentre': 'https://ecoindigital.cl/cdn/shop/files/S73Z-1_1200x1200.png?v=1704737905',
-  };
 
   Equipo({
     required this.modelo,
@@ -37,12 +29,8 @@ class Equipo {
     required this.sistemaOperativo,
     required this.versionOffice,
     required this.descripcion,
-    required this.imagen,
-  });
 
-  static String obtenerEnlaceImagen(String modelo) {
-    return enlacesImagenes[modelo] ?? '';
-  }
+  });
 }
 
 class IngresarEquipo extends StatefulWidget {
@@ -73,7 +61,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   TextEditingController _sistemaOperativoController = TextEditingController();
   TextEditingController _versionOfficeController = TextEditingController();
   TextEditingController _descripcionController = TextEditingController();
-  TextEditingController _imagenController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -90,7 +77,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     _sistemaOperativoController.dispose();
     _versionOfficeController.dispose();
     _descripcionController.dispose();
-    _imagenController.dispose();
     super.dispose();
   }
 
@@ -108,30 +94,42 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
           key: _formKey,
           child: Column(
             children: [
-              DropdownButtonFormField<String>(
-                value: _selectedModelo,
-                items: modelos.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    _selectedModelo = value;
-                    _rellenarDatos(value!);
-                  });
-                },
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Modelo',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor selecciona un modelo';
-                  }
-                  return null;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedModelo,
+                      items: [
+                        ...modelos.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ],
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedModelo = value;
+                          _rellenarDatos(value!);
+                        });
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Modelo',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor selecciona un modelo';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: _agregarModelo,
+                    icon: Icon(Icons.add),
+                  ),
+                ],
               ),
               SizedBox(height: 10),
               _buildTextFormField(
@@ -177,28 +175,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
               _buildTextFormField(
                 controller: _descripcionController,
                 labelText: "Descripción",
-              ),
-              _buildTextFormField(
-                controller: _imagenController, 
-                labelText: "URL de la Imagen",
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {}); 
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Container(
-                    height: 300,
-                    width: 300,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(_imagenController.text),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -250,7 +226,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     String sistemaOperativo = _sistemaOperativoController.text;
     String versionOffice = _versionOfficeController.text;
     String descripcion = _descripcionController.text;
-    String imagen = _imagenController.text;
 
     Equipo equipo = Equipo(
       modelo: _selectedModelo ?? '',
@@ -265,13 +240,12 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       sistemaOperativo: sistemaOperativo,
       versionOffice: versionOffice,
       descripcion: descripcion,
-      imagen: imagen,
     );
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}|${equipo.imagen}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
     await prefs.setStringList('equipos', equiposData);
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -313,7 +287,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     _sistemaOperativoController.clear();
     _versionOfficeController.clear();
     _descripcionController.clear();
-    _imagenController.clear();
+
   }
 
   Future<void> _rellenarDatos(String modelo) async {
@@ -325,12 +299,49 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         _marcaController.text = equipoData[3];
         _ramController.text = equipoData[4];
         _almacenController.text = equipoData[5];
-        _imagenController.text = Equipo.obtenerEnlaceImagen(modelo);
         break;
       }
     }
   }
-}
 
+  void _agregarModelo() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController newModelController = TextEditingController();
+        return AlertDialog(
+          title: Text("Agregar Nuevo Modelo"),
+          content: TextFormField(
+            controller: newModelController,
+            decoration: InputDecoration(
+              hintText: "Ingrese el nuevo modelo",
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                String newModel = newModelController.text.trim();
+                if (newModel.isNotEmpty) {
+                  setState(() {
+                    modelos.add(newModel);
+                    _selectedModelo = newModel;
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Text("Agregar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancelar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
 
 

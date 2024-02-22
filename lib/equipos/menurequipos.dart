@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:muniinventario/equipos/ingresarequipo.dart';
 import 'package:muniinventario/equipos/listadoequipos.dart';
 import 'package:muniinventario/inventarios/ingresoinventario.dart';
-import 'package:muniinventario/tickets/listainventario.dart';
+import 'package:muniinventario/inventarios/listainventario.dart';
 
 class RegistrarEquipos extends StatelessWidget {
 

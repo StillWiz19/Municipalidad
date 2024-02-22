@@ -60,7 +60,7 @@ class MenuPrestamos extends StatelessWidget {
           crossAxisSpacing: 16, 
           children: [
             _buildMenuItem(context, Icons.app_registration, 'Registrar Prestamos', RegistrarPrestamos()),
-            _buildMenuItem(context, Icons.school, 'Prestamos Proyector', PrestamosProyector(prestamos: prestamos)),
+            _buildMenuItem(context, Icons.school, 'Lista Prestamos', PrestamosProyector(prestamos: prestamos)),
           ],
         ),
       ),
