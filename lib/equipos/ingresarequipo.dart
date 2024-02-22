@@ -185,15 +185,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
                 controller: _descripcionController,
                 labelText: "Descripción",
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _guardarDatos(context);
-                  }
-                },
-                child: Text("Guardar"),
-              ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -211,6 +202,15 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
               ),
               SizedBox(height: 10),
               _image != null ? Image.file(_image!) : SizedBox(),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _guardarDatos(context);
+                  }
+                },
+                child: Text("Guardar"),
+              ),
             ],
           ),
         ),
