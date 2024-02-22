@@ -18,11 +18,6 @@ class Ticket {
   });
 }
 
-TextEditingController _numeroTicketController = TextEditingController();
-TextEditingController _usuarioController = TextEditingController();
-TextEditingController _departamentoController = TextEditingController();
-TextEditingController _solicitudController = TextEditingController();
-
 class CrearTicket extends StatefulWidget {
   const CrearTicket({Key? key}) : super(key: key);
 
@@ -30,112 +25,131 @@ class CrearTicket extends StatefulWidget {
   _CrearTicketState createState() => _CrearTicketState();
 }
 
-class _CrearTicketState extends State<CrearTicket>{
-  void _guardarDatos(BuildContext context) async {
-    String numeroTicket = _numeroTicketController.text;
-    String usuario = _usuarioController.text;
-    String departamento = _departamentoController.text;
-    String solicitud = _solicitudController.text;
+class _CrearTicketState extends State<CrearTicket> {
+  TextEditingController _numeroTicketController = TextEditingController();
+  TextEditingController _usuarioController = TextEditingController();
+  TextEditingController _departamentoController = TextEditingController();
+  TextEditingController _solicitudController = TextEditingController();
 
-    Ticket ticket = Ticket(
-      numeroTicket: numeroTicket,
-      usuario: usuario,
-      departamento: departamento,
-      solicitud: solicitud,
-    );
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-    ticketsData.add('${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
-    await prefs.setStringList('tickets', ticketsData);
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListaTickets) {
-      ListaTickets listaTickets = arguments;
-      listaTickets.tickets.add(ticket);
-    }
-
-    _numeroTicketController.clear();
-    _usuarioController.clear();
-    _departamentoController.clear();
-    _solicitudController.clear();
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog( 
-          title: Text("Datos Guardados"),
-          content: Text("Los datos han sido guardados correctamente."),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cerrar"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Crear Ticket', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-      backgroundColor: Color.fromARGB(255, 43, 74, 165),
-      centerTitle: true,
+      appBar: AppBar(
+        title: Text('Crear Ticket',
+            textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+        backgroundColor: Color.fromARGB(255, 43, 74, 165),
+        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _numeroTicketController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "N° de Ticket"
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildTextFormField(
+                controller: _numeroTicketController,
+                labelText: "N° de Ticket",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _usuarioController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Usuario"
+              _buildTextFormField(
+                controller: _usuarioController,
+                labelText: "Usuario",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _departamentoController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Departamento"
+              _buildTextFormField(
+                controller: _departamentoController,
+                labelText: "Departamento",
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: TextField(
-              controller: _solicitudController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: "Solicitud"
+              _buildTextFormField(
+                controller: _solicitudController,
+                labelText: "Solicitud",
               ),
-            ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _guardarDatos(context);
+                  }
+                },
+                child: Text("Guardar"),
+              )
+            ],
           ),
-          ElevatedButton(
-            onPressed: (){
-              _guardarDatos(context);
-            },
-            child: Text("Guardar"),
-          )
-        ],
+        ),
       ),
     );
+  }
+
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required String labelText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: labelText,
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  void _guardarDatos(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      String numeroTicket = _numeroTicketController.text;
+      String usuario = _usuarioController.text;
+      String departamento = _departamentoController.text;
+      String solicitud = _solicitudController.text;
+
+      Ticket ticket = Ticket(
+        numeroTicket: numeroTicket,
+        usuario: usuario,
+        departamento: departamento,
+        solicitud: solicitud,
+      );
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> ticketsData = prefs.getStringList('tickets') ?? [];
+      ticketsData.add(
+          '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
+      await prefs.setStringList('tickets', ticketsData);
+
+      final arguments = ModalRoute.of(context)!.settings.arguments;
+      if (arguments != null && arguments is ListaTickets) {
+        ListaTickets listaTickets = arguments;
+        listaTickets.tickets.add(ticket);
+      }
+
+      _numeroTicketController.clear();
+      _usuarioController.clear();
+      _departamentoController.clear();
+      _solicitudController.clear();
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Datos Guardados"),
+            content: Text("Los datos han sido guardados correctamente."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

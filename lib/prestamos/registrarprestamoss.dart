@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:intl/intl.dart';
 
 class Prestamo {
   final String numeroSerie;
@@ -33,6 +33,94 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
   TextEditingController _fechaController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  void _guardarDatos(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      String numeroSerie = _numeroSerieController.text;
+      String usuario = _usuarioController.text;
+      String departamento = _departamentoController.text;
+      String motivo = _motivoController.text;
+      String fecha = _fechaController.text;
+
+      Prestamo prestamo = Prestamo(
+        numeroSerie: numeroSerie,
+        usuario: usuario,
+        departamento: departamento,
+        motivo: motivo,
+        fecha: fecha,
+      );
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
+      prestamosData.add(
+          '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}');
+      await prefs.setStringList('prestamos', prestamosData);
+
+      _numeroSerieController.clear();
+      _usuarioController.clear();
+      _departamentoController.clear();
+      _motivoController.clear();
+      _fechaController.clear();
+
+      setState(() {});
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Datos Guardados"),
+            content: Text("Los datos han sido guardados correctamente."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _seleccionarFecha(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue, 
+              onPrimary: Colors.white, 
+              surface: Colors.white, 
+            ),
+
+            textTheme: TextTheme(
+              bodyText1: TextStyle(color: Colors.black),
+              subtitle1: TextStyle(color: Colors.black),
+              button: TextStyle(color: Colors.blue), 
+            ),
+          
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.white,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        _fechaController.text = DateFormat('dd/MM/yyyy').format(picked);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,9 +157,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _guardarDatos(context);
-                  }
+                  _guardarDatos(context);
                 },
                 child: Text("Guardar"),
               )
@@ -113,6 +199,10 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: "Fecha de Prestamo",
+          suffixIcon: IconButton(
+            onPressed: () => _seleccionarFecha(context),
+            icon: Icon(Icons.calendar_today),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -122,59 +212,5 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
         },
       ),
     );
-  }
-
-  void _guardarDatos(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
-      String numeroSerie = _numeroSerieController.text;
-      String usuario = _usuarioController.text;
-      String departamento = _departamentoController.text;
-      String motivo = _motivoController.text;
-      String fecha = _fechaController.text;
-
-      Prestamo prestamo = Prestamo(
-        numeroSerie: numeroSerie,
-        usuario: usuario,
-        departamento: departamento,
-        motivo: motivo,
-        fecha: fecha,
-      );
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
-      prestamosData.add(
-          '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}');
-      await prefs.setStringList('prestamos', prestamosData);
-
-      _limpiarCampos();
-
-      setState(() {});
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Datos Guardados"),
-            content: Text("Los datos han sido guardados correctamente."),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Cerrar"),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  void _limpiarCampos() {
-    _numeroSerieController.clear();
-    _usuarioController.clear();
-    _departamentoController.clear();
-    _motivoController.clear();
-    _fechaController.clear();
   }
 }
