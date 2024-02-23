@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/equipos/ingresarequipo.dart';
@@ -43,6 +44,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             sistemaOperativo: equipoData[9],
             versionOffice: equipoData[10],
             descripcion: equipoData[11],
+            imagenPath: equipoData.length > 12 ? equipoData[12] : null,
           );
         }));
         _filteredEquipos.addAll(widget.equipos);
@@ -103,6 +105,45 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       ),
     );
   }
+
+Future<void> _verFotoEquipo(String? imagePath) async {
+  if (imagePath != null) {
+    print("Ruta de la imagen: $imagePath");
+    File imageFile = File(imagePath);
+    if (await imageFile.exists()) {
+      showDialog(
+        context: context, 
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Foto del Equipo"),
+            content: Image.file(imageFile),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cerrar"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('El archivo de imagen no existe.'),
+        ),
+      );
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Este equipo no tiene una foto.'),
+      ),
+    );
+  }
+}
+
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
     return AppBar(
@@ -173,10 +214,19 @@ class _ListaEquipoState extends State<ListadoEquipo> {
                             ],
                           ),
                         
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => _eliminarEquipo(index),
-                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () => _eliminarEquipo(index),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.photo),
+                                onPressed: () => _verFotoEquipo(equipo.imagenPath),
+                              ),
+                            ],
+                          )
                         ),
                       ),
                     );

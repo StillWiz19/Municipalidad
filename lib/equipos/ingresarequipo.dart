@@ -284,7 +284,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> equiposData = prefs.getStringList('equipos') ?? [];
     equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
+        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}|${equipo.imagenPath}');
     await prefs.setStringList('equipos', equiposData);
 
     setState(() {
