@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/equipos/listadoequipos.dart';
@@ -17,6 +18,7 @@ class Equipo {
   final String sistemaOperativo;
   final String versionOffice;
   final String descripcion;
+  final String? imagenPath;
 
   Equipo({
     required this.modelo,
@@ -31,6 +33,7 @@ class Equipo {
     required this.sistemaOperativo,
     required this.versionOffice,
     required this.descripcion,
+    this.imagenPath,
   });
 }
 
@@ -253,6 +256,15 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     String versionOffice = _versionOfficeController.text;
     String descripcion = _descripcionController.text;
 
+    String? imagenPath;
+
+    if (_image != null) {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagePath = '${directory.path}/equipo_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      await _image!.copy(imagePath);
+      imagenPath = imagePath;
+    }
+
     Equipo equipo = Equipo(
       modelo: _selectedModelo ?? '',
       numeroSerie: numeroSerie,
@@ -266,6 +278,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       sistemaOperativo: sistemaOperativo,
       versionOffice: versionOffice,
       descripcion: descripcion,
+      imagenPath: imagenPath,
     );
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -273,6 +286,10 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     equiposData.add(
         '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}');
     await prefs.setStringList('equipos', equiposData);
+
+    setState(() {
+      _image = null;
+    });
 
     final arguments = ModalRoute.of(context)!.settings.arguments;
     if (arguments != null && arguments is ListadoEquipo) {

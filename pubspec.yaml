@@ -16,7 +16,8 @@ dependencies:
   intl: ^0.17.0
   flutter_search_bar: ^3.0.0
   camera: ^0.10.5+9
-  image_picker: ^0.8.4+4  
+  image_picker: ^0.8.4+4
+  path_provider: ^2.1.2  
 
 flutter_localizations:
     sdk: flutter
