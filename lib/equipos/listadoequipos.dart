@@ -115,7 +115,7 @@ Future<void> _verFotoEquipo(String? imagePath) async {
         context: context, 
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Foto del Equipo"),
+            title: Center(child: Text("Foto del Equipo")),
             content: Image.file(imageFile),
             actions: <Widget>[
               TextButton(
