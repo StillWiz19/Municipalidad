@@ -61,8 +61,8 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   TextEditingController _almacenController = TextEditingController();
   TextEditingController _procesadorController = TextEditingController();
   TextEditingController _departamentoController = TextEditingController();
-  TextEditingController _direccionController = TextEditingController();
   TextEditingController _sistemaOperativoController = TextEditingController();
+  TextEditingController _direccionController = TextEditingController();
   TextEditingController _versionOfficeController = TextEditingController();
   TextEditingController _descripcionController = TextEditingController();
 
@@ -81,8 +81,8 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     _almacenController.dispose();
     _procesadorController.dispose();
     _departamentoController.dispose();
-    _direccionController.dispose();
     _sistemaOperativoController.dispose();
+    _direccionController.dispose();
     _versionOfficeController.dispose();
     _descripcionController.dispose();
     super.dispose();
@@ -147,46 +147,53 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
               _buildTextFormField(
                 controller: _numeroSerieController,
                 labelText: "N° de Serie",
+                editable: true,
               ),
               _buildTextFormField(
                 controller: _numeroInventarioController,
                 labelText: "N° de Inventario",
+                editable: true,
               ),
               _buildTextFormField(
                 controller: _marcaController,
                 labelText: "Marca",
+                editable: false,
               ),
               _buildTextFormField(
                 controller: _ramController,
                 labelText: "Tipo Ram",
+                editable: false,
               ),
               _buildTextFormField(
                 controller: _almacenController,
                 labelText: "Tipo Disco Duro",
+                editable: false,
               ),
               _buildTextFormField(
                 controller: _procesadorController,
                 labelText: "Procesador",
+                editable: true,
               ),
               _buildTextFormField(
                 controller: _departamentoController,
                 labelText: "Departamento",
+                editable: true,
               ),
               _buildTextFormField(
                 controller: _direccionController,
                 labelText: "Dirección",
+                editable: true,
               ),
-              _buildTextFormField(
-                controller: _sistemaOperativoController,
-                labelText: "Sistema Operativo",
-              ),
+              _buildSistemaOperativoDropdown(),
               _buildTextFormField(
                 controller: _versionOfficeController,
                 labelText: "Versión Office",
+                editable: true,
               ),
               _buildTextFormField(
                 controller: _descripcionController,
                 labelText: "Descripción",
+                editable: true,
               ),
               SizedBox(height: 10),
               Row(
@@ -224,11 +231,13 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String labelText,
+    required bool editable,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
+        enabled: editable,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: labelText,
@@ -236,6 +245,41 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildSistemaOperativoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _sistemaOperativoController.text.isNotEmpty ? _sistemaOperativoController.text : null,
+        items: [
+          'Windows 7',
+          'Windows 8',
+          'Windows 10',
+          'Windows 11',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _sistemaOperativoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Sistema Operativo',
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Sistema Operativo';
           }
           return null;
         },
@@ -330,6 +374,10 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     _sistemaOperativoController.clear();
     _versionOfficeController.clear();
     _descripcionController.clear();
+
+    setState(() {
+      _selectedModelo = null;
+    });
   }
 
   Future<void> _rellenarDatos(String modelo) async {
@@ -338,10 +386,11 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     for (String data in equiposData) {
       List<String> equipoData = data.split('|');
       if (equipoData[0] == modelo) {
+        setState(() {
         _marcaController.text = equipoData[3];
         _ramController.text = equipoData[4];
         _almacenController.text = equipoData[5];
-        break;
+        });
       }
     }
   }
@@ -392,7 +441,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
-        print('No image selected.');
+        print('Ninguna imágen seleccionada.');
       }
     });
   }
@@ -404,7 +453,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
-        print('No image selected.');
+        print('Ninguna imágen seleccionada.');
       }
     });
   }
