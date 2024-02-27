@@ -26,11 +26,11 @@ class HomePage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: Colors.blue[900]), // Ajuste del tamaño del ícono
+              Icon(icon, size: 32, color: Colors.blue[900]), 
               SizedBox(height: 8),
               Text(
                 label,
-                style: TextStyle(fontSize: 14, color: Colors.blue[900]), // Ajuste del tamaño del texto
+                style: TextStyle(fontSize: 14, color: Colors.blue[900]), 
                 textAlign: TextAlign.center,
               ),
             ],
@@ -42,44 +42,61 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Menu Principal', textAlign: TextAlign.center),
-        backgroundColor: Colors.lightBlue[900],
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.blue[200]!, Colors.green[200]!],
+    return WillPopScope(
+      onWillPop: () async {
+        bool exitConfirmed = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('¿Salir?'),
+            content: Text('¿Estás seguro de que quieres salir de la aplicación?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false), 
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true), 
+                child: Text('Sí'),
+              ),
+            ],
           ),
+        );
+        return exitConfirmed ?? false; 
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Menu Principal', textAlign: TextAlign.center),
+          backgroundColor: Colors.lightBlue[900],
+          centerTitle: true,
         ),
-        child: GridView.count(
-          crossAxisCount: 2,
-          padding: EdgeInsets.all(16),
-          childAspectRatio: 1.3,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          children: [
-            _buildMenuItem(
-                context, Icons.work, 'Ticket Soporte', MenuTickets()),
-            _buildMenuItem(
-                context, Icons.school, 'Prestamos', MenuPrestamos()),
-            _buildMenuItem(context, Icons.inventory_outlined,
-                'Registrar Equipos', RegistrarEquipos()),
-            _buildMenuItem(context, Icons.computer_outlined, 'Otros',
-                MenuOtros()),
-          ],
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.blue[200]!, Colors.green[200]!],
+            ),
+          ),
+          child: GridView.count(
+            crossAxisCount: 2,
+            padding: EdgeInsets.all(16),
+            childAspectRatio: 1.3,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            children: [
+              _buildMenuItem(
+                  context, Icons.work, 'Ticket Soporte', MenuTickets()),
+              _buildMenuItem(
+                  context, Icons.school, 'Prestamos', MenuPrestamos()),
+              _buildMenuItem(context, Icons.inventory_outlined,
+                  'Registrar Equipos', RegistrarEquipos()),
+              _buildMenuItem(context, Icons.computer_outlined, 'Otros',
+                  MenuOtros()),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: HomePage(),
-  ));
-}

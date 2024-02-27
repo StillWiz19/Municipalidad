@@ -62,7 +62,7 @@ class _CrearTicketState extends State<CrearTicket> {
               ),
               _buildTextFormField(
                 controller: _solicitudController,
-                labelText: "Solicitud",
+                labelText: "Asuntos",
               ),
               SizedBox(height: 20),
               ElevatedButton(
