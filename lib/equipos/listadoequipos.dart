@@ -14,8 +14,10 @@ class ListadoEquipo extends StatefulWidget {
 }
 
 class _ListaEquipoState extends State<ListadoEquipo> {
-  TextEditingController _searchController = TextEditingController();
+  List<Equipo> equipos = [];
   List<Equipo> _filteredEquipos = [];
+
+  TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -25,45 +27,37 @@ class _ListaEquipoState extends State<ListadoEquipo> {
 
   Future<void> _cargarDatos() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? equiposData = prefs.getStringList('equipos');
-    if (equiposData != null) {
+    List<String> equiposData = prefs.getStringList('equipos') ?? [];
       setState(() {
-        widget.equipos.clear();
-        _filteredEquipos.clear();
-        widget.equipos.addAll(equiposData.map((data) {
+        equipos = equiposData.map((data) {
           List<String> equipoData = data.split('|');
           return Equipo(
-            modelo: equipoData[0],
-            numeroSerie: equipoData[1],
-            numeroInventario: equipoData[2],
-            marca: equipoData[3],
-            ram: equipoData[4],
-            almacenamiento: equipoData[5],
-            procesador: equipoData[6],
-            departamento: equipoData[7],
-            direccion: equipoData[8],
-            sistemaOperativo: equipoData[9],
-            versionOffice: equipoData[10],
-            descripcion: equipoData[11],
+            modelo: equipoData.length > 0 ? equipoData[0] : "",
+            numeroSerie: equipoData.length > 1 ? equipoData[1] : "",
+            numeroInventario: equipoData.length > 2 ? equipoData[2] : "",
+            marca: equipoData.length > 3 ? equipoData[3] : "",
+            ram: equipoData.length > 4 ? equipoData[4] : "",
+            almacenamiento: equipoData.length > 5 ? equipoData[5] : "",
+            procesador: equipoData.length > 6 ? equipoData[6] : "",
+            departamento: equipoData.length > 7 ? equipoData[7] : "",
+            direccion: equipoData.length > 8 ? equipoData[8] : "",
+            sistemaOperativo: equipoData.length > 9 ? equipoData[9] : "",
+            versionOffice: equipoData.length > 10 ? equipoData[10] : "",
+            descripcion: equipoData.length > 11 ? equipoData[11] : "",
             imagenPath: equipoData.length > 12 ? equipoData[12] : null,
           );
-        }));
-        _filteredEquipos.addAll(widget.equipos);
+        }).toList();
+        _filteredEquipos = List.from(equipos);
       });
-    }
   }
 
-  void _filterEquipos(String searchTerm) {
+   void _filterEquipos(String query) {
     setState(() {
-      _filteredEquipos = widget.equipos
-          .where((equipo) =>
-              equipo.modelo.toLowerCase().contains(searchTerm.toLowerCase()) ||
-              equipo.numeroSerie.toLowerCase().contains(searchTerm.toLowerCase()))
-          .toList();
+      _filteredEquipos = equipos.where((equipo) =>
+          equipo.numeroSerie.toLowerCase().contains(query.toLowerCase()) ||
+          equipo.modelo.toLowerCase().contains(query.toLowerCase())).toList();
     });
   }
-
-  
 
   Future<void> _eliminarEquipo(int index) async {
     showDialog(
@@ -82,30 +76,28 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                await _confirmarEliminarEquipo(index);
+                setState(() {
+                  equipos.removeAt(index);
+                  _filteredEquipos.removeAt(index);     
+                });
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setStringList(
+                  'equipos', 
+                  equipos
+                  .map((equipo) => 
+                  '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+                  
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('El equipo se eliminó correctamente.'),
+                  ),
+                 );
               },
               child: Text("Eliminar"),
             ),
           ],
         );
       },
-    );
-  }
-
-  Future<void> _confirmarEliminarEquipo(int index) async {
-    setState(() {
-      widget.equipos.removeAt(index);
-      _filteredEquipos.removeAt(index);
-    });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('equipos', widget.equipos.map((equipo) =>
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('El equipo se eliminó correctamente.'),
-      ),
     );
   }
 
@@ -178,7 +170,7 @@ Future<void> _verFotoEquipo(String? imagePath) async {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
-                  controller: _searchController,
+                  controller: _controller,
                   onChanged: _filterEquipos,
                   decoration: InputDecoration(
                     labelText: 'Buscar equipo por N° Serie o Modelo',
