@@ -35,7 +35,8 @@ class _ListaInventarioState extends State<ListaInventario> {
           modelo: inventarioData.length > 2 ? inventarioData[2] : "",
           nombreProducto: inventarioData.length > 3 ? inventarioData[3] : "",
           tipoProducto: inventarioData.length > 4 ? inventarioData[4] : "",
-          departamento: inventarioData.length > 5 ? inventarioData[5] : "",
+          usuario: inventarioData.length > 5 ? inventarioData[5] : "",
+          departamento: inventarioData.length > 6 ? inventarioData[6] : "",
         );
       }).toList();
       inventariosFiltrados = List.from(inventarios);
@@ -69,7 +70,7 @@ class _ListaInventarioState extends State<ListaInventario> {
                     'inventarios',
                     inventarios
                         .map((inventario) =>
-                            '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.departamento}')
+                            '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.usuario}|${inventario.departamento}')
                         .toList());
 
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +150,7 @@ class _ListaInventarioState extends State<ListaInventario> {
                               Text('Modelo: ${inventario.modelo}'),
                               Text('Dispositivo: ${inventario.nombreProducto}'),
                               Text('Marca: ${inventario.tipoProducto}'),
+                              Text('Usuario: ${inventario.usuario}'),
                               Text('Departamento: ${inventario.departamento}'),
                             ],
                           ),

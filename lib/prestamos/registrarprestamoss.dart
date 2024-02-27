@@ -6,6 +6,7 @@ class Prestamo {
   final String numeroSerie;
   final String usuario;
   final String departamento;
+  final String dispositivo;
   final String motivo;
   final String fecha;
 
@@ -13,6 +14,7 @@ class Prestamo {
     required this.numeroSerie,
     required this.usuario,
     required this.departamento,
+    required this.dispositivo,
     required this.motivo,
     required this.fecha,
   });
@@ -29,6 +31,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
   TextEditingController _numeroSerieController = TextEditingController();
   TextEditingController _usuarioController = TextEditingController();
   TextEditingController _departamentoController = TextEditingController();
+  TextEditingController _dispositivoController = TextEditingController();
   TextEditingController _motivoController = TextEditingController();
   TextEditingController _fechaController = TextEditingController();
 
@@ -39,6 +42,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
       String numeroSerie = _numeroSerieController.text;
       String usuario = _usuarioController.text;
       String departamento = _departamentoController.text;
+      String dispositivo = _dispositivoController.text;
       String motivo = _motivoController.text;
       String fecha = _fechaController.text;
 
@@ -46,6 +50,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
         numeroSerie: numeroSerie,
         usuario: usuario,
         departamento: departamento,
+        dispositivo: dispositivo,
         motivo: motivo,
         fecha: fecha,
       );
@@ -53,12 +58,13 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
       prestamosData.add(
-          '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}');
+          '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.dispositivo}|${prestamo.motivo}|${prestamo.fecha}');
       await prefs.setStringList('prestamos', prestamosData);
 
       _numeroSerieController.clear();
       _usuarioController.clear();
       _departamentoController.clear();
+      _dispositivoController.clear();
       _motivoController.clear();
       _fechaController.clear();
 
@@ -150,6 +156,10 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
                 labelText: "Departamento",
               ),
               _buildTextFormField(
+                controller: _dispositivoController,
+                labelText: "Dispositivo"
+              ),
+              _buildTextFormField(
                 controller: _motivoController,
                 labelText: "Motivos",
               ),
@@ -192,7 +202,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
 
   Widget _buildDateField() {
     return Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(2.0),
       child: TextFormField(
         controller: _fechaController,
         readOnly: true,

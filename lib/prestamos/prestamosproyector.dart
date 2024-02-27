@@ -33,8 +33,9 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
           numeroSerie: prestamosData[0],
           usuario: prestamosData[1],
           departamento: prestamosData[2],
-          motivo: prestamosData[3],
-          fecha: prestamosData[4],
+          dispositivo: prestamosData[3],
+          motivo: prestamosData[4],
+          fecha: prestamosData[5],
         );
       }).toList();
       prestamosFiltrados = List.from(prestamos);
@@ -76,7 +77,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('prestamos',
-        prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.motivo}|${prestamo.fecha}').toList());
+        prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.dispositivo}|${prestamo.motivo}|${prestamo.fecha}').toList());
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -148,6 +149,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
                               Text('N° de Serie: ${prestamo.numeroSerie}'),
                               Text('Usuario: ${prestamo.usuario}'),
                               Text('Departamento: ${prestamo.departamento}'),
+                              Text('Dispositivo: ${prestamo.dispositivo}'),
                               Text('Motivos: ${prestamo.motivo}'),
                               Text('Fecha de Préstamo: ${prestamo.fecha}'),
                             ],

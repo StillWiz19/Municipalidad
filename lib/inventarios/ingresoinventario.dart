@@ -8,6 +8,7 @@ class Inventario {
   final String modelo;
   final String nombreProducto;
   final String tipoProducto;
+  final String usuario;
   final String departamento;
 
   Inventario({
@@ -16,6 +17,7 @@ class Inventario {
     required this.modelo,
     required this.nombreProducto,
     required this.tipoProducto,
+    required this.usuario,
     required this.departamento,
   });
 }
@@ -33,6 +35,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
   TextEditingController _modeloController = TextEditingController();
   TextEditingController _nombreProductoController = TextEditingController();
   TextEditingController _tipoProductoController = TextEditingController();
+  TextEditingController _usuarioController = TextEditingController();
   TextEditingController _departamentoController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -69,6 +72,10 @@ class _IngresarInventarioState extends State<IngresarInventario>{
               _buildTextFormField(
                 controller: _tipoProductoController,
                 labelText: "Marca",
+              ),
+              _buildTextFormField(
+                controller: _usuarioController,
+                labelText: "Usuario"
               ),
               _buildTextFormField(
                 controller: _departamentoController,
@@ -119,6 +126,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
       String modelo = _modeloController.text;
       String nombreProducto = _nombreProductoController.text;
       String tipoProducto = _tipoProductoController.text;
+      String usuario = _usuarioController.text;
       String departamento = _departamentoController.text;
 
       Inventario inventario = Inventario(
@@ -127,12 +135,13 @@ class _IngresarInventarioState extends State<IngresarInventario>{
         modelo: modelo,
         nombreProducto: nombreProducto,
         tipoProducto: tipoProducto,
+        usuario: usuario,
         departamento: departamento,
       );
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-      inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.departamento}');
+      inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.usuario}|${inventario.departamento}');
       await prefs.setStringList('inventarios', inventariosData);
 
       final arguments = ModalRoute.of(context)!.settings.arguments;
@@ -169,6 +178,7 @@ class _IngresarInventarioState extends State<IngresarInventario>{
     _modeloController.clear();
     _nombreProductoController.clear();
     _tipoProductoController.clear();
+    _usuarioController.clear();
     _departamentoController.clear();
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:muniinventario/equipos/editarequipo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/equipos/ingresarequipo.dart';
 
@@ -61,6 +62,8 @@ class _ListaEquipoState extends State<ListadoEquipo> {
           .toList();
     });
   }
+
+  
 
   Future<void> _eliminarEquipo(int index) async {
     showDialog(
@@ -145,6 +148,8 @@ Future<void> _verFotoEquipo(String? imagePath) async {
 }
 
 
+
+
   PreferredSizeWidget? buildAppBar(BuildContext context) {
     return AppBar(
       title: Text('Lista de Equipos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
@@ -224,6 +229,17 @@ Future<void> _verFotoEquipo(String? imagePath) async {
                               IconButton(
                                 icon: Icon(Icons.photo),
                                 onPressed: () => _verFotoEquipo(equipo.imagenPath),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditarEquipo(equipo: equipo),
+                                    )
+                                  );
+                                },
                               ),
                             ],
                           )
