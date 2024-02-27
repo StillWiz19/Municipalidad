@@ -157,17 +157,17 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
               _buildTextFormField(
                 controller: _marcaController,
                 labelText: "Marca",
-                editable: false,
+                editable: _modeloGuardado(_selectedModelo),
               ),
               _buildTextFormField(
                 controller: _ramController,
                 labelText: "Tipo Ram",
-                editable: false,
+                editable: _modeloGuardado(_selectedModelo),
               ),
               _buildTextFormField(
                 controller: _almacenController,
                 labelText: "Tipo Disco Duro",
-                editable: false,
+                editable: _modeloGuardado(_selectedModelo),
               ),
               _buildTextFormField(
                 controller: _procesadorController,
@@ -395,11 +395,11 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     }
   }
 
-  void _agregarModelo() {
-    showDialog(
+  void _agregarModelo() async {
+    TextEditingController newModelController = TextEditingController();
+    String? newModel = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController newModelController = TextEditingController();
         return AlertDialog(
           title: Text("Agregar Nuevo Modelo"),
           content: TextFormField(
@@ -411,20 +411,13 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                String newModel = newModelController.text.trim();
-                if (newModel.isNotEmpty) {
-                  setState(() {
-                    modelos.add(newModel);
-                    _selectedModelo = newModel;
-                  });
-                  Navigator.of(context).pop();
-                }
+                Navigator.of(context).pop(newModelController.text.trim());
               },
               child: Text("Agregar"),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(null);
               },
               child: Text("Cancelar"),
             ),
@@ -432,6 +425,15 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         );
       },
     );
+
+    if (newModel != null && newModel.isNotEmpty) {
+      setState(() {
+        modelos.add(newModel);
+        _selectedModelo = newModel;
+      });
+
+      // Aquí puedes agregar lógica adicional si es necesario
+    }
   }
 
   Future<void> _getImageFromCamera() async {
@@ -457,5 +459,8 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       }
     });
   }
-}
 
+  bool _modeloGuardado(String? modelo) {
+    return modelos.contains(modelo);
+  }
+}

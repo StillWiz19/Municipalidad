@@ -250,7 +250,7 @@ Future<void> _verFotoEquipo(String? imagePath) async {
                                 icon: Icon(Icons.delete),
                                 onPressed: () => _eliminarEquipo(index),
                               ),
-                              
+                         
                             ],
                           )
                         ),
