@@ -51,14 +51,6 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       });
   }
 
-   void _filterEquipos(String query) {
-    setState(() {
-      _filteredEquipos = equipos.where((equipo) =>
-          equipo.numeroSerie.toLowerCase().contains(query.toLowerCase()) ||
-          equipo.modelo.toLowerCase().contains(query.toLowerCase())).toList();
-    });
-  }
-
   Future<void> _eliminarEquipo(int index) async {
     showDialog(
       context: context,
@@ -100,6 +92,38 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       },
     );
   }
+
+  void _filterEquipos(String query) {
+    setState(() {
+      _filteredEquipos = equipos.where((equipo) =>
+          equipo.numeroSerie.toLowerCase().contains(query.toLowerCase()) ||
+          equipo.modelo.toLowerCase().contains(query.toLowerCase())).toList();
+    });
+  }
+
+  void _editarEquipo(int index) {
+    final equipo = _filteredEquipos[index];
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => EditarEquipo(
+        equipo: equipo,
+        onSave: (editedEquipo) {
+          setState(() {
+            equipos[index] = editedEquipo;
+            _filteredEquipos[index] = editedEquipo;
+          });
+          _actualizarDatosSharedPreferences();
+        },
+      ),
+    ));
+  }
+
+  Future<void> _actualizarDatosSharedPreferences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setStringList('equipos', equipos.map((equipo) =>
+    '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
+}
+
+
 
 Future<void> _verFotoEquipo(String? imagePath) async {
   if (imagePath != null) {
@@ -215,24 +239,18 @@ Future<void> _verFotoEquipo(String? imagePath) async {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () => _eliminarEquipo(index),
+                                icon: Icon(Icons.edit),
+                                onPressed: () => _editarEquipo(index),
                               ),
                               IconButton(
                                 icon: Icon(Icons.photo),
                                 onPressed: () => _verFotoEquipo(equipo.imagenPath),
                               ),
                               IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditarEquipo(equipo: equipo),
-                                    )
-                                  );
-                                },
+                                icon: Icon(Icons.delete),
+                                onPressed: () => _eliminarEquipo(index),
                               ),
+                              
                             ],
                           )
                         ),
