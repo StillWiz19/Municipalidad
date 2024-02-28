@@ -6,26 +6,30 @@ import 'package:http/http.dart' as http;
 
 class Db_helper{
   // ignore: body_might_complete_normally_nullable
-  Future<String?> uploadImages(List<File> _imagenes) async {
-    print('uploadImages called with _imagenes: $_imagenes');
-    var imagenesCopy = List<File>.from(_imagenes); // Make a copy of the _imagenes list
-    for (var imageFile in imagenesCopy) {
-      var request = http.MultipartRequest('POST', Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'));
-      request.files.add(await http.MultipartFile.fromPath('fotoReclamo', imageFile.path));
-      var response = await request.send();
+  Future<String?> uploadImages(File? imagen) async {
+    if (imagen == null) {
+      throw Exception('No imagen');
+    }
 
-      if (response.statusCode == 200) {
-        // Image uploaded successfully.
-        var responseBody = await response.stream.bytesToString();
-        print('Response: $responseBody');
-        return responseBody;
-      } else {
-        // Error uploading image.
-        print('Error uploading image from');
-        return null;
-      }
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'),
+    );
+    request.files.add(await http.MultipartFile.fromPath('imagen', imagen.path));
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Image uploaded successfully.
+      var responseBody = await response.stream.bytesToString();
+      print('Response: $responseBody');
+      return responseBody;
+    } else {
+      // Error uploading image.
+      print('Error uploading image from');
+      return null;
     }
   }
+  
   Future<void> ingresarEquipo(
     String modelo,
     String numserie,
@@ -39,10 +43,10 @@ class Db_helper{
     String sistemaoperativo,
     String versionoffice,
     String descripcion,
-    List<File> imagen
+    File? imagen
   ) async {
     String? varimagen;
-    if (imagen.isNotEmpty){
+    if (imagen != null){
       varimagen = await uploadImages(imagen);
     }
     var url = Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php');
@@ -69,7 +73,7 @@ class Db_helper{
       body: body
     );
     if (response.statusCode == 200) {
-      print("Equipo registrado");
+      print(data);
     } else {
       throw Exception('error');
     }

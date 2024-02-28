@@ -55,7 +55,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   ];
 
   String? _selectedModelo;
-  File _imagen;
+  File? _imagen;
 
   TextEditingController _numeroSerieController = TextEditingController();
   TextEditingController _numeroInventarioController = TextEditingController();
@@ -323,7 +323,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     );
 
     setState(() {
-      _imagen.clear();
+      _imagen = null;
     });
 
     showDialog(
@@ -392,7 +392,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
 
     setState(() {
       if (pickedFile != null) {
-        _imagen = File(pickedFile.path) as List<File>;
+        _imagen = File(pickedFile.path);
       } else {
         print('Ninguna imágen seleccionada.');
       }
@@ -404,7 +404,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
 
     setState(() {
       if (pickedFile != null) {
-        _imagen = File(pickedFile.path) as List<File>;
+        _imagen = File(pickedFile.path);
       } else {
         print('Ninguna imágen seleccionada.');
       }
