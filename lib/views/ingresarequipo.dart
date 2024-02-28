@@ -1,13 +1,12 @@
-// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors, library_private_types_in_public_api, prefer_final_fields, unnecessary_null_comparison, no_leading_underscores_for_local_identifiers, avoid_print
 
 import 'dart:io';
 import 'package:muniinventario/db_helper/db_helper.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/listadoequipos.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
 
 class Equipo {
+  final String id;
   final String modelo;
   final String numeroSerie;
   final String numeroInventario;
@@ -23,6 +22,7 @@ class Equipo {
   final String? imagenPath;
 
   Equipo({
+    required this.id,
     required this.modelo,
     required this.numeroSerie,
     required this.numeroInventario,
@@ -55,6 +55,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   ];
 
   String? _selectedModelo;
+  File _imagen;
 
   TextEditingController _numeroSerieController = TextEditingController();
   TextEditingController _numeroInventarioController = TextEditingController();
@@ -69,9 +70,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   TextEditingController _descripcionController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-
-  File? _image;
-
   final picker = ImagePicker();
 
   @override
@@ -212,7 +210,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
                 ],
               ),
               SizedBox(height: 10),
-              _image != null ? Image.file(_image!) : SizedBox(),
+              _imagen != null ? Image.file(_imagen! as File) : SizedBox(),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -291,34 +289,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   void _guardarDatos(BuildContext context) async {
     Db_helper db = Db_helper();
 
-    db.ingresarEquipo(
-      _selectedModelo,
-      _numeroSerieController.text,
-      _numeroInventarioController.text,
-      _marcaController.text,
-      _ramController.text,
-      _almacenController.text,
-      _procesadorController.text,
-      _departamentoController.text,
-      _direccionController.text,
-      _sistemaOperativoController.text,
-      _versionOfficeController.text,
-      _descripcionController.text
-    );
-
-    String? imagenPath;
-
-    if (_image != null) {
-      final directory = await getApplicationDocumentsDirectory();
-      final imagePath = '${directory.path}/equipo_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      await _image!.copy(imagePath);
-      imagenPath = imagePath;
-    }
-
-    setState(() {
-      _image = null;
-    });
-
     void _limpiarCampos() {
       _numeroSerieController.clear();
       _numeroInventarioController.clear();
@@ -335,6 +305,26 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         _selectedModelo = null;
       });
     }
+
+    db.ingresarEquipo(
+      _selectedModelo ?? '',
+      _numeroSerieController.text,
+      _numeroInventarioController.text,
+      _marcaController.text,
+      _ramController.text,
+      _almacenController.text,
+      _procesadorController.text,
+      _departamentoController.text,
+      _direccionController.text,
+      _sistemaOperativoController.text,
+      _versionOfficeController.text,
+      _descripcionController.text,
+      _imagen
+    );
+
+    setState(() {
+      _imagen.clear();
+    });
 
     showDialog(
       context: context,
@@ -402,7 +392,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
 
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        _imagen = File(pickedFile.path) as List<File>;
       } else {
         print('Ninguna imágen seleccionada.');
       }
@@ -414,7 +404,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
 
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        _imagen = File(pickedFile.path) as List<File>;
       } else {
         print('Ninguna imágen seleccionada.');
       }

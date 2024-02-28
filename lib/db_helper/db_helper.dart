@@ -1,20 +1,17 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers, avoid_print, camel_case_types
+
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:muniinventario/views/ingresarequipo.dart';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class Db_helper{
+  // ignore: body_might_complete_normally_nullable
   Future<String?> uploadImages(List<File> _imagenes) async {
     print('uploadImages called with _imagenes: $_imagenes');
-    var imagenesCopy =
-        List<File>.from(_imagenes); // Make a copy of the _imagenes list
+    var imagenesCopy = List<File>.from(_imagenes); // Make a copy of the _imagenes list
     for (var imageFile in imagenesCopy) {
-      var request = http.MultipartRequest(
-          'POST',
-          Uri.parse(
-              'https://intranet.angol.cl/api/apiReclamos.php?endpoint=uploadImagen'));
-      request.files.add(
-          await http.MultipartFile.fromPath('fotoReclamo', imageFile.path));
+      var request = http.MultipartRequest('POST', Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'));
+      request.files.add(await http.MultipartFile.fromPath('fotoReclamo', imageFile.path));
       var response = await request.send();
 
       if (response.statusCode == 200) {

@@ -33,10 +33,13 @@ class _ListaEquipoState extends State<ListadoEquipo> {
               marca: json['marca'],
               ram: json['ram'],
               almacenamiento: json['almacenamiento'],
+              procesador: json['procesador'],
               departamento: json['departamento'],
               direccion: json['direccion'],
               sistemaOperativo: json['sistemaoperativo'],
               versionOffice: json['versionoffice'],
+              descripcion: json['descripcion'],
+              imagenPath: json['imagen']
             )).toList();
       });
     } else {
