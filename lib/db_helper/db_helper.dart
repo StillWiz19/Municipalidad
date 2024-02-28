@@ -4,6 +4,31 @@ import 'package:muniinventario/views/ingresarequipo.dart';
 import 'package:http/http.dart' as http;
 
 class Db_helper{
+  Future<String?> uploadImages(List<File> _imagenes) async {
+    print('uploadImages called with _imagenes: $_imagenes');
+    var imagenesCopy =
+        List<File>.from(_imagenes); // Make a copy of the _imagenes list
+    for (var imageFile in imagenesCopy) {
+      var request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              'https://intranet.angol.cl/api/apiReclamos.php?endpoint=uploadImagen'));
+      request.files.add(
+          await http.MultipartFile.fromPath('fotoReclamo', imageFile.path));
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        // Image uploaded successfully.
+        var responseBody = await response.stream.bytesToString();
+        print('Response: $responseBody');
+        return responseBody;
+      } else {
+        // Error uploading image.
+        print('Error uploading image from');
+        return null;
+      }
+    }
+  }
   Future<void> ingresarEquipo(
     String modelo,
     String numserie,
@@ -11,11 +36,18 @@ class Db_helper{
     String marca,
     String ram,
     String almacenamiento,
+    String procesador,
     String departamento,
     String direccion,
     String sistemaoperativo,
     String versionoffice,
+    String descripcion,
+    List<File> imagen
   ) async {
+    String? varimagen;
+    if (imagen.isNotEmpty){
+      varimagen = await uploadImages(imagen);
+    }
     var url = Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php');
     Map data = {
       'numserie': numserie,
@@ -24,10 +56,13 @@ class Db_helper{
       'modelo': modelo,
       'ram': ram,
       'almacenamiento': almacenamiento,
+      'procesador':procesador,
       'departamento': departamento,
       'direccion': direccion,
       'sistemaoperativo': sistemaoperativo,
-      'versionoffice': versionoffice
+      'versionoffice': versionoffice,
+      'descripcion': descripcion,
+      'imagen':varimagen
     };
     var body = jsonEncode(data);
     final response = await http.post(url,
