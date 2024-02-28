@@ -97,7 +97,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
           textAlign: TextAlign.center,
           style: TextStyle(fontFamily: 'Roboto'),
         ),
-        backgroundColor: Color.fromARGB(255, 43, 74, 165),
+        backgroundColor: Color.fromARGB(255, 32, 75, 160),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -174,11 +174,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
                 labelText: "Procesador",
                 editable: true,
               ),
-              _buildTextFormField(
-                controller: _departamentoController,
-                labelText: "Departamento",
-                editable: true,
-              ),
+              _buildDepartamentoDropdown(),
               _buildTextFormField(
                 controller: _direccionController,
                 labelText: "Dirección",
@@ -245,6 +241,60 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildDepartamentoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
+        items: [
+          'Alcaldía',
+          'Secretaria Municipal',
+          'Secretaria Administración',
+          'Asesoría Jurídica',
+          'Control Interno',
+          'Transparencia',
+          'Finanzas',
+          'Inspectores',
+          'Concejo Municipal',
+          'Oficina de Partes',
+          'Secretaria de Planificaciones',
+          'Dirección de Obras',
+          'Inventario Municipal',
+          'Remuneraciones',
+          'Adquisiciones',
+          'Contabilidad',
+          'Rentas y Patentes',
+          'Tesorería',
+          'Prevencionistas',
+          'Informatica',
+          'Comunicaciones',
+          'Dirección de Recursos Humanos',
+          'Fotocopiadora',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _departamentoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Departamento'
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Departamento';
           }
           return null;
         },
@@ -431,8 +481,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
         modelos.add(newModel);
         _selectedModelo = newModel;
       });
-
-      // Aquí puedes agregar lógica adicional si es necesario
     }
   }
 

@@ -56,10 +56,7 @@ class _CrearTicketState extends State<CrearTicket> {
                 controller: _usuarioController,
                 labelText: "Usuario",
               ),
-              _buildTextFormField(
-                controller: _departamentoController,
-                labelText: "Departamento",
-              ),
+              _buildDepartamentoDropdown(),
               _buildTextFormField(
                 controller: _solicitudController,
                 labelText: "Asuntos",
@@ -102,6 +99,60 @@ class _CrearTicketState extends State<CrearTicket> {
     );
   }
 
+  Widget _buildDepartamentoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
+        items: [
+          'Alcaldía',
+          'Secretaria Municipal',
+          'Secretaria Administración',
+          'Asesoría Jurídica',
+          'Control Interno',
+          'Transparencia',
+          'Finanzas',
+          'Inspectores',
+          'Concejo Municipal',
+          'Oficina de Partes',
+          'Secretaria de Planificaciones',
+          'Dirección de Obras',
+          'Inventario Municipal',
+          'Remuneraciones',
+          'Adquisiciones',
+          'Contabilidad',
+          'Rentas y Patentes',
+          'Tesorería',
+          'Prevencionistas',
+          'Informatica',
+          'Comunicaciones',
+          'Dirección de Recursos Humanos',
+          'Fotocopiadora',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _departamentoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Departamento'
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Departamento';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       String numeroTicket = _numeroTicketController.text;
@@ -130,8 +181,11 @@ class _CrearTicketState extends State<CrearTicket> {
 
       _numeroTicketController.clear();
       _usuarioController.clear();
-      _departamentoController.clear();
       _solicitudController.clear();
+
+      setState(() {
+           _departamentoController.clear();
+      });
 
       showDialog(
         context: context,
