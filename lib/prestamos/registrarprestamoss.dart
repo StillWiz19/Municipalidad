@@ -63,12 +63,14 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
 
       _numeroSerieController.clear();
       _usuarioController.clear();
-      _departamentoController.clear();
       _dispositivoController.clear();
       _motivoController.clear();
       _fechaController.clear();
+      setState(() {
+              _departamentoController.clear();
+      });
 
-      setState(() {});
+    
 
       showDialog(
         context: context,
@@ -151,10 +153,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
                 controller: _usuarioController,
                 labelText: "Usuario",
               ),
-              _buildTextFormField(
-                controller: _departamentoController,
-                labelText: "Departamento",
-              ),
+              _buildDepartamentoDropdown(),
               _buildTextFormField(
                 controller: _dispositivoController,
                 labelText: "Dispositivo"
@@ -193,6 +192,60 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Por favor ingresa este campo';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildDepartamentoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
+        items: [
+          'Alcaldía',
+          'Secretaria Municipal',
+          'Secretaria Administración',
+          'Asesoría Jurídica',
+          'Control Interno',
+          'Transparencia',
+          'Finanzas',
+          'Inspectores',
+          'Concejo Municipal',
+          'Oficina de Partes',
+          'Secretaria de Planificaciones',
+          'Dirección de Obras',
+          'Inventario Municipal',
+          'Remuneraciones',
+          'Adquisiciones',
+          'Contabilidad',
+          'Rentas y Patentes',
+          'Tesoreria',
+          'Prevencionistas',
+          'Informatica',
+          'Comunicaciones',
+          'Dirección de Recursos Humanos',
+          'Fotocopiadora',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _departamentoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Departamento'
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Departamento';
           }
           return null;
         },

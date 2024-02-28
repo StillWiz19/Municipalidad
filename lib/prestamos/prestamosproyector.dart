@@ -35,7 +35,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
           departamento: prestamosData[2],
           dispositivo: prestamosData[3],
           motivo: prestamosData[4],
-          fecha: prestamosData[5],
+          fecha: prestamosData.length > 5 ? prestamosData[5] : "",
         );
       }).toList();
       prestamosFiltrados = List.from(prestamos);
