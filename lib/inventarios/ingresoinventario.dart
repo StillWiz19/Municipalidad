@@ -77,10 +77,8 @@ class _IngresarInventarioState extends State<IngresarInventario>{
                 controller: _usuarioController,
                 labelText: "Usuario"
               ),
-              _buildTextFormField(
-                controller: _departamentoController,
-                labelText: "Departamento",
-              ),
+              _buildDepartamentoDropdown(),
+
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -117,6 +115,60 @@ class _IngresarInventarioState extends State<IngresarInventario>{
         },
       ),
     );
+  }
+
+  Widget _buildDepartamentoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
+        items: [
+          'Alcaldía',
+          'Secretaria Municipal',
+          'Secretaria Administración',
+          'Asesoría Jurídica',
+          'Control Interno',
+          'Transparencia',
+          'Finanzas',
+          'Inspectores',
+          'Concejo Municipal',
+          'Oficina de Partes',
+          'Secretaria de Planificaciones',
+          'Dirección de Obras',
+          'Inventario Municipal',
+          'Remuneraciones',
+          'Adquisiciones',
+          'Contabilidad',
+          'Rentas y Patentes',
+          'Tesorería',
+          'Prevencionistas',
+          'Informatica',
+          'Comunicaciones',
+          'Dirección de Recursos Humanos',
+          'Fotocopiadora',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            _departamentoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Departamento'
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Departamento';
+          }
+          return null;
+        },
+      ),
+      );
   }
 
   void _guardarDatos(BuildContext context) async {
@@ -179,7 +231,10 @@ class _IngresarInventarioState extends State<IngresarInventario>{
     _nombreProductoController.clear();
     _tipoProductoController.clear();
     _usuarioController.clear();
-    _departamentoController.clear();
+
+    setState(() {
+       _departamentoController.clear();
+    });
   }
 }
 
