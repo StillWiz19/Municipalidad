@@ -31,7 +31,10 @@ class _ClavesWifiState extends State<ClavesWifi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Agregar Claves WIFI')),
+      appBar: AppBar(title: Text('Agregar Claves WIFI', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
+      backgroundColor: Color.fromARGB(255, 43, 74, 165),
+      centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
@@ -43,11 +46,7 @@ class _ClavesWifiState extends State<ClavesWifi> {
                 labelText: "Nombre de Red",
                 prefixIcon: Icons.wifi,
               ),
-              _buildTextFormField(
-                controller: departamentoController,
-                labelText: "Departamento",
-                prefixIcon: Icons.work,
-              ),
+              _buildDepartamentoDropdown(),
               _buildTextFormField(
                 controller: contraseniaController,
                 labelText: "Contraseña",
@@ -96,6 +95,60 @@ class _ClavesWifiState extends State<ClavesWifi> {
     );
   }
 
+  Widget _buildDepartamentoDropdown() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: departamentoController.text.isNotEmpty ? departamentoController.text : null,
+        items: [
+          'Alcaldía',
+          'Secretaria Municipal',
+          'Secretaria Administración',
+          'Asesoría Jurídica',
+          'Control Interno',
+          'Transparencia',
+          'Finanzas',
+          'Inspectores',
+          'Concejo Municipal',
+          'Oficina de Partes',
+          'Secretaria de Planificaciones',
+          'Dirección de Obras',
+          'Inventario Municipal',
+          'Remuneraciones',
+          'Adquisiciones',
+          'Contabilidad',
+          'Rentas y Patentes',
+          'Tesorería',
+          'Prevencionistas',
+          'Informatica',
+          'Comunicaciones',
+          'Dirección de Recursos Humanos',
+          'Fotocopiadora',
+        ].map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String? value) {
+          setState(() {
+            departamentoController.text = value ?? '';
+          });
+        },
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Departamento'
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor selecciona un Departamento';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       String nombreRed = nombreRedController.text;
@@ -120,8 +173,10 @@ class _ClavesWifiState extends State<ClavesWifi> {
       }
 
       nombreRedController.clear();
-      departamentoController.clear();
       contraseniaController.clear();
+      setState(() {
+        departamentoController.clear();
+      });
 
       showDialog(
         context: context,
