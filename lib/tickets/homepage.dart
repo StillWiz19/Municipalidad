@@ -65,8 +65,8 @@ class HomePage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Menu Principal', textAlign: TextAlign.center),
-          backgroundColor: Colors.lightBlue[900],
+          title: Text('Menu Principal', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.black,
           centerTitle: true,
         ),
         body: Container(
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.blue[200]!, Colors.green[200]!],
+              colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
             ),
           ),
           child: GridView.count(

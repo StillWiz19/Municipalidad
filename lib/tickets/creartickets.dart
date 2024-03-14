@@ -38,9 +38,10 @@ class _CrearTicketState extends State<CrearTicket> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Crear Ticket',
-            textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-        backgroundColor: Color.fromARGB(255, 43, 74, 165),
+           textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),

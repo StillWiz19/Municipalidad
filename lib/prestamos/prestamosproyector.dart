@@ -100,9 +100,10 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Préstamos', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-        backgroundColor: Colors.blue[900],
+        title: Text('Lista de Préstamos', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -111,7 +112,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue[200]!, Colors.green[200]!],
+                colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
               ),
             ),
           ),
@@ -123,9 +124,11 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
                   controller: _controller,
                   onChanged: _filtrarPrestamos,
                   decoration: InputDecoration(
-                    labelText: 'Buscar',
+                    labelText: 'Buscar por Usuario o N° serie',
                     border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white),
                   ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               Expanded(

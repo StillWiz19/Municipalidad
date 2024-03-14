@@ -94,11 +94,10 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       appBar: AppBar(
         title: Text(
           'Ingresar Equipo',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: 'Roboto'),
-        ),
-        backgroundColor: Color.fromARGB(255, 32, 75, 160),
+          textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

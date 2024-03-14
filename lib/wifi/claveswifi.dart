@@ -31,9 +31,10 @@ class _ClavesWifiState extends State<ClavesWifi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Agregar Claves WIFI', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-      backgroundColor: Color.fromARGB(255, 43, 74, 165),
+      appBar: AppBar(title: Text('Agregar Claves WIFI', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+      backgroundColor: Colors.black,
       centerTitle: true,
+      iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),

@@ -48,16 +48,17 @@ class RegistrarEquipos extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Menu Inventario',
-            textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-        backgroundColor: Colors.blue[900],
+            textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.blue[200]!, Colors.green[200]!],
+            colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
           ),
         ),
         child: GridView.count(

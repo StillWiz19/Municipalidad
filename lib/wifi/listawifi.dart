@@ -116,9 +116,10 @@ class _ListarWifiState extends State<ListarWifi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de las claves WIFI', textAlign: TextAlign.center, style: TextStyle(fontFamily: 'Roboto')),
-        backgroundColor: Colors.blue[900],
+        title: Text('Lista de las claves WIFI', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Stack(
         children: [
@@ -127,7 +128,7 @@ class _ListarWifiState extends State<ListarWifi> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.blue[200]!, Colors.green[200]!]
+                colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
               ),
             ),
           ),
@@ -139,9 +140,11 @@ class _ListarWifiState extends State<ListarWifi> {
                   controller: _controller,
                   onChanged: _filtrarClavesWifi,
                   decoration: InputDecoration(
-                    labelText: 'Buscar',
+                    labelText: 'Buscar por Departamento',
                     border: OutlineInputBorder(),
+                    labelStyle: TextStyle(color: Colors.white),
                   ),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
               Expanded(
