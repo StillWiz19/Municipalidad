@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:muniinventario/tickets/creartickets.dart';
+import 'package:muniinventario/views/tickets/creartickets.dart';
 
 class ListaTickets extends StatefulWidget {
   final List<Ticket> tickets;

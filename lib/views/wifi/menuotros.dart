@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/prestamos/prestamosproyector.dart';
-import 'package:muniinventario/prestamos/registrarprestamoss.dart';
+import 'package:muniinventario/views/wifi/claveswifi.dart';
+import 'package:muniinventario/views/wifi/listawifi.dart';
 
-class MenuPrestamos extends StatelessWidget {
+class MenuOtros extends StatelessWidget {
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
@@ -40,10 +40,10 @@ class MenuPrestamos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Prestamo> prestamos = [];
+    List<Wifi> claveswifi = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Prestamos',
+        title: Text('Menu Equipos',
             textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -54,7 +54,7 @@ class MenuPrestamos extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors:  [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
+            colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
           ),
         ),
         child: GridView.count(
@@ -65,9 +65,9 @@ class MenuPrestamos extends StatelessWidget {
           crossAxisSpacing: 16,
           children: [
             _buildMenuItem(
-                context, Icons.app_registration, 'Registrar Prestamos', RegistrarPrestamos()),
-            _buildMenuItem(
-                context, Icons.school, 'Lista Prestamos', PrestamosProyector(prestamos: prestamos)),
+                context, Icons.wifi, 'Agregar Claves WIFI', ClavesWifi()),
+            _buildMenuItem(context, Icons.wifi, 'Listas WIFI',
+                ListarWifi(claveswifi: claveswifi)),
           ],
         ),
       ),

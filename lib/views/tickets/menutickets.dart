@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/equipos/ingresarequipo.dart';
-import 'package:muniinventario/equipos/listadoequipos.dart';
-import 'package:muniinventario/inventarios/ingresoinventario.dart';
-import 'package:muniinventario/inventarios/listainventario.dart';
+import 'package:muniinventario/views/tickets/creartickets.dart';
+import 'package:muniinventario/views/tickets/listatickets.dart';
 
-class RegistrarEquipos extends StatelessWidget {
-
+class MenuTickets extends StatelessWidget {
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
@@ -43,11 +40,10 @@ class RegistrarEquipos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Equipo> equipos = []; 
-    List<Inventario> inventarios = [];
+    List<Ticket> tickets = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Inventario',
+        title: Text('Menu Tickets',
             textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -69,13 +65,9 @@ class RegistrarEquipos extends StatelessWidget {
           crossAxisSpacing: 16,
           children: [
             _buildMenuItem(
-                context, Icons.computer_outlined, 'Ingresar Equipos', IngresarEquipo()),
+                context, Icons.confirmation_number, 'Crear Ticket', CrearTicket()),
             _buildMenuItem(
-                context, Icons.checklist_rtl, 'Listado de Equipos', ListadoEquipo(equipos: equipos)),
-            _buildMenuItem(
-                context, Icons.inventory_outlined, 'Ingreso Inventario', IngresarInventario()),
-            _buildMenuItem(
-                context, Icons.checklist_rtl, 'Lista Inventario', ListaInventario(inventarios: inventarios)),
+                context, Icons.checklist, 'Lista de Tickets', ListaTickets(tickets: tickets)),
           ],
         ),
       ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/tickets/creartickets.dart';
-import 'package:muniinventario/tickets/listatickets.dart';
+import 'package:muniinventario/views/prestamos/prestamosproyector.dart';
+import 'package:muniinventario/views/prestamos/registrarprestamoss.dart';
 
-class MenuTickets extends StatelessWidget {
+class MenuPrestamos extends StatelessWidget {
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
@@ -40,10 +40,10 @@ class MenuTickets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Ticket> tickets = [];
+    List<Prestamo> prestamos = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Tickets',
+        title: Text('Menu Prestamos',
             textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -54,7 +54,7 @@ class MenuTickets extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
+            colors:  [const Color.fromARGB(255, 45, 49, 52), Color.fromARGB(255, 181, 222, 115)],
           ),
         ),
         child: GridView.count(
@@ -65,9 +65,9 @@ class MenuTickets extends StatelessWidget {
           crossAxisSpacing: 16,
           children: [
             _buildMenuItem(
-                context, Icons.confirmation_number, 'Crear Ticket', CrearTicket()),
+                context, Icons.app_registration, 'Registrar Prestamos', RegistrarPrestamos()),
             _buildMenuItem(
-                context, Icons.checklist, 'Lista de Tickets', ListaTickets(tickets: tickets)),
+                context, Icons.school, 'Lista Prestamos', PrestamosProyector(prestamos: prestamos)),
           ],
         ),
       ),

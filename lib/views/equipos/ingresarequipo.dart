@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:muniinventario/equipos/listadoequipos.dart';
+import 'package:muniinventario/views/equipos/listadoequipos.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Equipo {
   final String modelo;
@@ -337,19 +337,24 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   }
 
   void _guardarDatos(BuildContext context) async {
-    String numeroSerie = _numeroSerieController.text;
-    String numeroInventario = _numeroInventarioController.text;
-    String marca = _marcaController.text;
-    String ram = _ramController.text;
-    String almacenamiento = _almacenController.text;
-    String procesador = _procesadorController.text;
-    String departamento = _departamentoController.text;
-    String direccion = _direccionController.text;
-    String sistemaOperativo = _sistemaOperativoController.text;
-    String versionOffice = _versionOfficeController.text;
-    String descripcion = _descripcionController.text;
-
+    Db_helper db = Db_helper();
     String? imagenPath;
+
+    db.ingresarEquipo(
+      _numeroSerieController.text,
+      _numeroInventarioController.text,
+      _marcaController.text,
+      _selectedModelo ?? '',
+      _ramController.text,
+      _almacenController.text,
+      _procesadorController.text,
+      _departamentoController.text,
+      _direccionController.text,
+      _sistemaOperativoController.text,
+      _versionOfficeController.text,
+      _descripcionController.text,
+      imagenPath ?? ''
+    );
 
     if (_image != null) {
       final directory = await getApplicationDocumentsDirectory();
@@ -357,28 +362,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
       await _image!.copy(imagePath);
       imagenPath = imagePath;
     }
-
-    Equipo equipo = Equipo(
-      modelo: _selectedModelo ?? '',
-      numeroSerie: numeroSerie,
-      numeroInventario: numeroInventario,
-      marca: marca,
-      ram: ram,
-      almacenamiento: almacenamiento,
-      procesador: procesador,
-      departamento: departamento,
-      direccion: direccion,
-      sistemaOperativo: sistemaOperativo,
-      versionOffice: versionOffice,
-      descripcion: descripcion,
-      imagenPath: imagenPath,
-    );
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> equiposData = prefs.getStringList('equipos') ?? [];
-    equiposData.add(
-        '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}|${equipo.imagenPath}');
-    await prefs.setStringList('equipos', equiposData);
 
     setState(() {
       _image = null;
@@ -430,18 +413,7 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
   }
 
   Future<void> _rellenarDatos(String modelo) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? equiposData = prefs.getStringList('equipos') ?? [];
-    for (String data in equiposData) {
-      List<String> equipoData = data.split('|');
-      if (equipoData[0] == modelo) {
-        setState(() {
-        _marcaController.text = equipoData[3];
-        _ramController.text = equipoData[4];
-        _almacenController.text = equipoData[5];
-        });
-      }
-    }
+    
   }
 
   void _agregarModelo() async {

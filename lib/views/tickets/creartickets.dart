@@ -1,40 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/wifi/listawifi.dart';
+import 'package:muniinventario/views/tickets/listatickets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Wifi {
-  final String nombreRed;
+class Ticket {
+  final String numeroTicket;
+  final String usuario;
   final String departamento;
-  final String contrasenia;
+  final String solicitud;
+  bool aceptado;
 
-  Wifi({
-    required this.nombreRed,
+  Ticket({
+    required this.numeroTicket,
+    required this.usuario,
     required this.departamento,
-    required this.contrasenia,
+    required this.solicitud,
+    this.aceptado = false,
   });
 }
 
-class ClavesWifi extends StatefulWidget {
-  const ClavesWifi({Key? key}) : super(key: key);
+class CrearTicket extends StatefulWidget {
+  const CrearTicket({Key? key}) : super(key: key);
 
   @override
-  _ClavesWifiState createState() => _ClavesWifiState();
+  _CrearTicketState createState() => _CrearTicketState();
 }
 
-class _ClavesWifiState extends State<ClavesWifi> {
-  TextEditingController nombreRedController = TextEditingController();
-  TextEditingController departamentoController = TextEditingController();
-  TextEditingController contraseniaController = TextEditingController();
+class _CrearTicketState extends State<CrearTicket> {
+  TextEditingController _numeroTicketController = TextEditingController();
+  TextEditingController _usuarioController = TextEditingController();
+  TextEditingController _departamentoController = TextEditingController();
+  TextEditingController _solicitudController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Agregar Claves WIFI', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-      backgroundColor: Colors.black,
-      centerTitle: true,
-      iconTheme: IconThemeData(color: Colors.white),
+      appBar: AppBar(
+        title: Text('Crear Ticket',
+           textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -43,16 +50,17 @@ class _ClavesWifiState extends State<ClavesWifi> {
           child: Column(
             children: [
               _buildTextFormField(
-                controller: nombreRedController,
-                labelText: "Nombre de Red",
-                prefixIcon: Icons.wifi,
+                controller: _numeroTicketController,
+                labelText: "N° de Ticket",
+              ),
+              _buildTextFormField(
+                controller: _usuarioController,
+                labelText: "Usuario",
               ),
               _buildDepartamentoDropdown(),
               _buildTextFormField(
-                controller: contraseniaController,
-                labelText: "Contraseña",
-                prefixIcon: Icons.password,
-                isPassword: true,
+                controller: _solicitudController,
+                labelText: "Asuntos",
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -61,7 +69,7 @@ class _ClavesWifiState extends State<ClavesWifi> {
                     _guardarDatos(context);
                   }
                 },
-                child: Text("Agregar Clave"),
+                child: Text("Guardar"),
               )
             ],
           ),
@@ -73,18 +81,14 @@ class _ClavesWifiState extends State<ClavesWifi> {
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String labelText,
-    required IconData prefixIcon,
-    bool isPassword = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
-        obscureText: isPassword,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: labelText,
-          prefixIcon: Icon(prefixIcon),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -100,7 +104,7 @@ class _ClavesWifiState extends State<ClavesWifi> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: departamentoController.text.isNotEmpty ? departamentoController.text : null,
+        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
         items: [
           'Alcaldía',
           'Secretaria Municipal',
@@ -133,7 +137,7 @@ class _ClavesWifiState extends State<ClavesWifi> {
         }).toList(),
         onChanged: (String? value) {
           setState(() {
-            departamentoController.text = value ?? '';
+            _departamentoController.text = value ?? '';
           });
         },
         decoration: InputDecoration(
@@ -152,31 +156,36 @@ class _ClavesWifiState extends State<ClavesWifi> {
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String nombreRed = nombreRedController.text;
-      String departamento = departamentoController.text;
-      String contrasenia = contraseniaController.text;
+      String numeroTicket = _numeroTicketController.text;
+      String usuario = _usuarioController.text;
+      String departamento = _departamentoController.text;
+      String solicitud = _solicitudController.text;
 
-      Wifi wifi = Wifi(
-        nombreRed: nombreRed,
+      Ticket ticket = Ticket(
+        numeroTicket: numeroTicket,
+        usuario: usuario,
         departamento: departamento,
-        contrasenia: contrasenia,
+        solicitud: solicitud,
       );
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> wifiData = prefs.getStringList('wifi') ?? [];
-      wifiData.add('${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}');
-      await prefs.setStringList('wifi', wifiData);
+      List<String> ticketsData = prefs.getStringList('tickets') ?? [];
+      ticketsData.add(
+          '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
+      await prefs.setStringList('tickets', ticketsData);
 
       final arguments = ModalRoute.of(context)!.settings.arguments;
-      if (arguments != null && arguments is ListarWifi) {
-        ListarWifi listarWifi = arguments;
-        listarWifi.claveswifi.add(wifi);
+      if (arguments != null && arguments is ListaTickets) {
+        ListaTickets listaTickets = arguments;
+        listaTickets.tickets.add(ticket);
       }
 
-      nombreRedController.clear();
-      contraseniaController.clear();
+      _numeroTicketController.clear();
+      _usuarioController.clear();
+      _solicitudController.clear();
+
       setState(() {
-        departamentoController.clear();
+           _departamentoController.clear();
       });
 
       showDialog(

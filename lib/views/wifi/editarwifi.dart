@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/wifi/claveswifi.dart';
+import 'package:muniinventario/views/wifi/claveswifi.dart';
 
 class EditarWifi extends StatefulWidget {
   final Wifi wifi;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:muniinventario/inventarios/listainventario.dart';
+import 'package:muniinventario/views/inventarios/listainventario.dart';
 
 class Inventario {
   final String numeroSerie;

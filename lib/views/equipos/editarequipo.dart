@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/equipos/ingresarequipo.dart';
+import 'package:muniinventario/views/equipos/ingresarequipo.dart';
 
 class EditarEquipo extends StatefulWidget {
   final Equipo equipo;

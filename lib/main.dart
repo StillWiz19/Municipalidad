@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/tickets/homepage.dart';
+import 'package:muniinventario/homepage.dart';
 
 void main() => runApp(MyApp());
 

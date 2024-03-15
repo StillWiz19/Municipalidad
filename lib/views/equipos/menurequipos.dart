@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/wifi/claveswifi.dart';
-import 'package:muniinventario/wifi/listawifi.dart';
+import 'package:muniinventario/views/equipos/ingresarequipo.dart';
+import 'package:muniinventario/views/equipos/listadoequipos.dart';
+import 'package:muniinventario/views/inventarios/ingresoinventario.dart';
+import 'package:muniinventario/views/inventarios/listainventario.dart';
 
-class MenuOtros extends StatelessWidget {
+class RegistrarEquipos extends StatelessWidget {
+
   Widget _buildMenuItem(
       BuildContext context, IconData icon, String label, Widget? page) {
     if (page == null) {
@@ -40,10 +43,11 @@ class MenuOtros extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Wifi> claveswifi = [];
+    List<Equipo> equipos = []; 
+    List<Inventario> inventarios = [];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Equipos',
+        title: Text('Menu Inventario',
             textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -65,9 +69,13 @@ class MenuOtros extends StatelessWidget {
           crossAxisSpacing: 16,
           children: [
             _buildMenuItem(
-                context, Icons.wifi, 'Agregar Claves WIFI', ClavesWifi()),
-            _buildMenuItem(context, Icons.wifi, 'Listas WIFI',
-                ListarWifi(claveswifi: claveswifi)),
+                context, Icons.computer_outlined, 'Ingresar Equipos', IngresarEquipo()),
+            _buildMenuItem(
+                context, Icons.checklist_rtl, 'Listado de Equipos', ListadoEquipo(equipos: equipos)),
+            _buildMenuItem(
+                context, Icons.inventory_outlined, 'Ingreso Inventario', IngresarInventario()),
+            _buildMenuItem(
+                context, Icons.checklist_rtl, 'Lista Inventario', ListaInventario(inventarios: inventarios)),
           ],
         ),
       ),

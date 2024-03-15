@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/wifi/menuotros.dart';
-import 'package:muniinventario/equipos/menurequipos.dart';
-import 'package:muniinventario/prestamos/menuprestamos.dart';
-import 'package:muniinventario/tickets/menutickets.dart';
+import 'package:muniinventario/views/wifi/menuotros.dart';
+import 'package:muniinventario/views/equipos/menurequipos.dart';
+import 'package:muniinventario/views/prestamos/menuprestamos.dart';
+import 'package:muniinventario/views/tickets/menutickets.dart';
 
 class HomePage extends StatelessWidget {
   Widget _buildMenuItem(

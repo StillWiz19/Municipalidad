@@ -1,47 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/tickets/listatickets.dart';
+import 'package:muniinventario/views/wifi/listawifi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Ticket {
-  final String numeroTicket;
-  final String usuario;
+class Wifi {
+  final String nombreRed;
   final String departamento;
-  final String solicitud;
-  bool aceptado;
+  final String contrasenia;
 
-  Ticket({
-    required this.numeroTicket,
-    required this.usuario,
+  Wifi({
+    required this.nombreRed,
     required this.departamento,
-    required this.solicitud,
-    this.aceptado = false,
+    required this.contrasenia,
   });
 }
 
-class CrearTicket extends StatefulWidget {
-  const CrearTicket({Key? key}) : super(key: key);
+class ClavesWifi extends StatefulWidget {
+  const ClavesWifi({Key? key}) : super(key: key);
 
   @override
-  _CrearTicketState createState() => _CrearTicketState();
+  _ClavesWifiState createState() => _ClavesWifiState();
 }
 
-class _CrearTicketState extends State<CrearTicket> {
-  TextEditingController _numeroTicketController = TextEditingController();
-  TextEditingController _usuarioController = TextEditingController();
-  TextEditingController _departamentoController = TextEditingController();
-  TextEditingController _solicitudController = TextEditingController();
+class _ClavesWifiState extends State<ClavesWifi> {
+  TextEditingController nombreRedController = TextEditingController();
+  TextEditingController departamentoController = TextEditingController();
+  TextEditingController contraseniaController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Crear Ticket',
-           textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+      appBar: AppBar(title: Text('Agregar Claves WIFI', textAlign: TextAlign.center, style: TextStyle(color: Colors.white)),
+      backgroundColor: Colors.black,
+      centerTitle: true,
+      iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -50,17 +43,16 @@ class _CrearTicketState extends State<CrearTicket> {
           child: Column(
             children: [
               _buildTextFormField(
-                controller: _numeroTicketController,
-                labelText: "N° de Ticket",
-              ),
-              _buildTextFormField(
-                controller: _usuarioController,
-                labelText: "Usuario",
+                controller: nombreRedController,
+                labelText: "Nombre de Red",
+                prefixIcon: Icons.wifi,
               ),
               _buildDepartamentoDropdown(),
               _buildTextFormField(
-                controller: _solicitudController,
-                labelText: "Asuntos",
+                controller: contraseniaController,
+                labelText: "Contraseña",
+                prefixIcon: Icons.password,
+                isPassword: true,
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -69,7 +61,7 @@ class _CrearTicketState extends State<CrearTicket> {
                     _guardarDatos(context);
                   }
                 },
-                child: Text("Guardar"),
+                child: Text("Agregar Clave"),
               )
             ],
           ),
@@ -81,14 +73,18 @@ class _CrearTicketState extends State<CrearTicket> {
   Widget _buildTextFormField({
     required TextEditingController controller,
     required String labelText,
+    required IconData prefixIcon,
+    bool isPassword = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.all(8.0),
       child: TextFormField(
         controller: controller,
+        obscureText: isPassword,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: labelText,
+          prefixIcon: Icon(prefixIcon),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
@@ -104,7 +100,7 @@ class _CrearTicketState extends State<CrearTicket> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: DropdownButtonFormField<String>(
-        value: _departamentoController.text.isNotEmpty ? _departamentoController.text : null,
+        value: departamentoController.text.isNotEmpty ? departamentoController.text : null,
         items: [
           'Alcaldía',
           'Secretaria Municipal',
@@ -137,7 +133,7 @@ class _CrearTicketState extends State<CrearTicket> {
         }).toList(),
         onChanged: (String? value) {
           setState(() {
-            _departamentoController.text = value ?? '';
+            departamentoController.text = value ?? '';
           });
         },
         decoration: InputDecoration(
@@ -156,36 +152,31 @@ class _CrearTicketState extends State<CrearTicket> {
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String numeroTicket = _numeroTicketController.text;
-      String usuario = _usuarioController.text;
-      String departamento = _departamentoController.text;
-      String solicitud = _solicitudController.text;
+      String nombreRed = nombreRedController.text;
+      String departamento = departamentoController.text;
+      String contrasenia = contraseniaController.text;
 
-      Ticket ticket = Ticket(
-        numeroTicket: numeroTicket,
-        usuario: usuario,
+      Wifi wifi = Wifi(
+        nombreRed: nombreRed,
         departamento: departamento,
-        solicitud: solicitud,
+        contrasenia: contrasenia,
       );
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-      ticketsData.add(
-          '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
-      await prefs.setStringList('tickets', ticketsData);
+      List<String> wifiData = prefs.getStringList('wifi') ?? [];
+      wifiData.add('${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}');
+      await prefs.setStringList('wifi', wifiData);
 
       final arguments = ModalRoute.of(context)!.settings.arguments;
-      if (arguments != null && arguments is ListaTickets) {
-        ListaTickets listaTickets = arguments;
-        listaTickets.tickets.add(ticket);
+      if (arguments != null && arguments is ListarWifi) {
+        ListarWifi listarWifi = arguments;
+        listarWifi.claveswifi.add(wifi);
       }
 
-      _numeroTicketController.clear();
-      _usuarioController.clear();
-      _solicitudController.clear();
-
+      nombreRedController.clear();
+      contraseniaController.clear();
       setState(() {
-           _departamentoController.clear();
+        departamentoController.clear();
       });
 
       showDialog(
