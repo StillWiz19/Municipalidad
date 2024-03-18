@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors
+
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/equipos/editarequipo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/equipos/ingresarequipo.dart';
 
 class ListadoEquipo extends StatefulWidget {
@@ -26,29 +29,30 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> equiposData = prefs.getStringList('equipos') ?? [];
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
       setState(() {
-        equipos = equiposData.map((data) {
-          List<String> equipoData = data.split('|');
+        equipos = jsonData.map((data) {
           return Equipo(
-            modelo: equipoData.length > 0 ? equipoData[0] : "",
-            numeroSerie: equipoData.length > 1 ? equipoData[1] : "",
-            numeroInventario: equipoData.length > 2 ? equipoData[2] : "",
-            marca: equipoData.length > 3 ? equipoData[3] : "",
-            ram: equipoData.length > 4 ? equipoData[4] : "",
-            almacenamiento: equipoData.length > 5 ? equipoData[5] : "",
-            procesador: equipoData.length > 6 ? equipoData[6] : "",
-            departamento: equipoData.length > 7 ? equipoData[7] : "",
-            direccion: equipoData.length > 8 ? equipoData[8] : "",
-            sistemaOperativo: equipoData.length > 9 ? equipoData[9] : "",
-            versionOffice: equipoData.length > 10 ? equipoData[10] : "",
-            descripcion: equipoData.length > 11 ? equipoData[11] : "",
-            imagenPath: equipoData.length > 12 ? equipoData[12] : null,
+            modelo: data['modelo'],
+            numeroSerie: data['numserie'],
+            numeroInventario: data['numinventario'],
+            marca: data['marca'],
+            ram: data['ram'],
+            almacenamiento: data['almacenamiento'],
+            procesador: data['procesador'],
+            departamento: data['departamento'],
+            direccion: data['direccion'],
+            sistemaOperativo: data['sistemaoperativo'],
+            versionOffice: data['versionoffice'],
+            descripcion: data['descripcion'],
+            imagenPath: data['imagen']
           );
         }).toList();
         _filteredEquipos = List.from(equipos);
       });
+    }
   }
 
   Future<void> _eliminarEquipo(int index) async {
@@ -72,13 +76,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
                   equipos.removeAt(index);
                   _filteredEquipos.removeAt(index);     
                 });
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setStringList(
-                  'equipos', 
-                  equipos
-                  .map((equipo) => 
-                  '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
-                  
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('El equipo se eliminó correctamente.'),
@@ -111,60 +109,48 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             equipos[index] = editedEquipo;
             _filteredEquipos[index] = editedEquipo;
           });
-          _actualizarDatosSharedPreferences();
         },
       ),
     ));
   }
 
-  Future<void> _actualizarDatosSharedPreferences() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList('equipos', equipos.map((equipo) =>
-    '${equipo.modelo}|${equipo.numeroSerie}|${equipo.numeroInventario}|${equipo.marca}|${equipo.ram}|${equipo.almacenamiento}|${equipo.procesador}|${equipo.departamento}|${equipo.direccion}|${equipo.sistemaOperativo}|${equipo.versionOffice}|${equipo.descripcion}').toList());
-}
-
-
-
-Future<void> _verFotoEquipo(String? imagePath) async {
-  if (imagePath != null) {
-    print("Ruta de la imagen: $imagePath");
-    File imageFile = File(imagePath);
-    if (await imageFile.exists()) {
-      showDialog(
-        context: context, 
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Center(child: Text("Foto del Equipo")),
-            content: Image.file(imageFile),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Cerrar"),
-              ),
-            ],
-          );
-        },
-      );
+  Future<void> _verFotoEquipo(String? imagePath) async {
+    if (imagePath != null) {
+      print("Ruta de la imagen: $imagePath");
+      File imageFile = File(imagePath);
+      if (await imageFile.exists()) {
+        showDialog(
+          context: context, 
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Center(child: Text("Foto del Equipo")),
+              content: Image.file(imageFile),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Cerrar"),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('El archivo de imagen no existe.'),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('El archivo de imagen no existe.'),
+          content: Text('Este equipo no tiene una foto.'),
         ),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Este equipo no tiene una foto.'),
-      ),
-    );
   }
-}
-
-
-
 
   PreferredSizeWidget? buildAppBar(BuildContext context) {
     return AppBar(
@@ -252,8 +238,7 @@ Future<void> _verFotoEquipo(String? imagePath) async {
                               IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () => _eliminarEquipo(index),
-                              ),
-                         
+                              ),                       
                             ],
                           )
                         ),

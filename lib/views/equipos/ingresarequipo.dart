@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, avoid_print
+
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -366,12 +368,6 @@ class _IngresarEquipoState extends State<IngresarEquipo> {
     setState(() {
       _image = null;
     });
-
-    final arguments = ModalRoute.of(context)!.settings.arguments;
-    if (arguments != null && arguments is ListadoEquipo) {
-      ListadoEquipo listadoEquipo = arguments;
-      listadoEquipo.equipos.add(equipo);
-    }
 
     _limpiarCampos();
 
