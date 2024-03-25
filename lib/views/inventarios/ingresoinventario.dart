@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:muniinventario/views/inventarios/listainventario.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Inventario {
   final String numeroSerie;
@@ -174,34 +173,17 @@ class _IngresarInventarioState extends State<IngresarInventario>{
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String numeroSerie = _numeroSerieController.text;
-      String numeroInventario = _numeroInventarioController.text;
-      String modelo = _modeloController.text;
-      String nombreProducto = _nombreProductoController.text;
-      String tipoProducto = _tipoProductoController.text;
-      String usuario = _usuarioController.text;
-      String departamento = _departamentoController.text;
+      Db_helper db = Db_helper();
 
-      Inventario inventario = Inventario(
-        numeroSerie: numeroSerie,
-        numeroInventario: numeroInventario,
-        modelo: modelo,
-        nombreProducto: nombreProducto,
-        tipoProducto: tipoProducto,
-        usuario: usuario,
-        departamento: departamento,
+      db.ingresarInventario(
+        _numeroSerieController.text,
+        _numeroInventarioController.text,
+        _modeloController.text,
+        _nombreProductoController.text,
+        _tipoProductoController.text,
+        _usuarioController.text,
+        _departamentoController.text  
       );
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-      inventariosData.add('${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.usuario}|${inventario.departamento}');
-      await prefs.setStringList('inventarios', inventariosData);
-
-      final arguments = ModalRoute.of(context)!.settings.arguments;
-      if (arguments != null && arguments is ListaInventario) {
-        ListaInventario listaInventario = arguments;
-        listaInventario.inventarios.add(inventario);
-      }
 
       _limpiarCampos();
 

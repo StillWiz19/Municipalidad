@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors, prefer_final_fields, use_key_in_widget_constructors, prefer_const_constructors_in_immutables, library_private_types_in_public_api, avoid_print, prefer_const_literals_to_create_immutables
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/inventarios/ingresoinventario.dart';
 
 class ListaInventario extends StatefulWidget {
@@ -24,26 +27,28 @@ class _ListaInventarioState extends State<ListaInventario> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> inventariosData = prefs.getStringList('inventarios') ?? [];
-    setState(() {
-      inventarios = inventariosData.map((data) {
-        List<String> inventarioData = data.split('|');
-        return Inventario(
-          numeroSerie: inventarioData.length > 0 ? inventarioData[0] : "",
-          numeroInventario: inventarioData.length > 1 ? inventarioData[1] : "",
-          modelo: inventarioData.length > 2 ? inventarioData[2] : "",
-          nombreProducto: inventarioData.length > 3 ? inventarioData[3] : "",
-          tipoProducto: inventarioData.length > 4 ? inventarioData[4] : "",
-          usuario: inventarioData.length > 5 ? inventarioData[5] : "",
-          departamento: inventarioData.length > 6 ? inventarioData[6] : "",
-        );
-      }).toList();
-      inventariosFiltrados = List.from(inventarios);
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_inventario.php'));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      setState(() {
+        inventarios = jsonData.map((data) {
+          return Inventario(
+            numeroSerie: data['numserie'],
+            numeroInventario: data['numinventario'],
+            modelo: data['modelo'],
+            nombreProducto: data['nombreprod'],
+            tipoProducto: data['marca'],
+            usuario: data['usuario'],
+            departamento: data['departamento']
+          );
+        }).toList();
+        inventariosFiltrados = List.from(inventarios);
+      });
+    }
   }
 
   Future<void> _eliminarInventario(int index) async {
+    final idEquipo = inventarios[index].numeroSerie;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -60,24 +65,28 @@ class _ListaInventarioState extends State<ListaInventario> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop(); 
-                setState(() {
-                  inventarios.removeAt(index);
-                  inventariosFiltrados.removeAt(index);
-                });
-
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await prefs.setStringList(
-                    'inventarios',
-                    inventarios
-                        .map((inventario) =>
-                            '${inventario.numeroSerie}|${inventario.numeroInventario}|${inventario.modelo}|${inventario.nombreProducto}|${inventario.tipoProducto}|${inventario.usuario}|${inventario.departamento}')
-                        .toList());
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('El dispositivo se eliminó correctamente.'),
-                  ),
+                final response = await http.post(
+                  Uri.parse('http://10.0.2.2:80/inventario/api_inventario.php'),
+                  body: {'id': idEquipo.toString()},
                 );
+                if (response.statusCode == 200){
+                  print("Inventario Eliminado");
+                  setState(() {
+                    inventarios.removeAt(index);
+                    inventariosFiltrados.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('El dispositivo se eliminó correctamente.'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al eliminar el equipo.'),
+                    ),
+                  );
+                }
               },
               child: Text("Eliminar"),
             ),

@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/equipos/ingresarequipo.dart';
 
@@ -136,6 +138,23 @@ class _EditarEquipoState extends State<EditarEquipo> {
                       );
                       widget.onSave(editedEquipo);
                       Navigator.of(context).pop();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Datos Actualizados"),
+                            content: Text("Los datos han sido actualizados correctamente."),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cerrar"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                     child: Text('Guardar Cambios'),
                   ),
@@ -148,4 +167,3 @@ class _EditarEquipoState extends State<EditarEquipo> {
     );
   }
 }
-

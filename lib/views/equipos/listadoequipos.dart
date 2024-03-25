@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors
+// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_const_constructors, prefer_const_literals_to_create_immutables, library_private_types_in_public_api, prefer_final_fields, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
 import 'dart:io';
 import 'dart:convert';
@@ -56,6 +56,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _eliminarEquipo(int index) async {
+    final idEquipo = equipos[index].numeroSerie;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -72,16 +73,28 @@ class _ListaEquipoState extends State<ListadoEquipo> {
             TextButton(
               onPressed: () async {
                 Navigator.of(context).pop();
-                setState(() {
-                  equipos.removeAt(index);
-                  _filteredEquipos.removeAt(index);     
-                });
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('El equipo se eliminó correctamente.'),
-                  ),
-                 );
+                final response = await http.post(
+                  Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'),
+                  body: {'id': idEquipo.toString()},
+                );
+                if (response.statusCode == 200){
+                  print("Equipo Eliminado");
+                  setState(() {
+                    equipos.removeAt(index);
+                    _filteredEquipos.removeAt(index);     
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('El equipo se eliminó correctamente.'),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error al eliminar el equipo.'),
+                    ),
+                  );
+                }
               },
               child: Text("Eliminar"),
             ),
@@ -99,16 +112,47 @@ class _ListaEquipoState extends State<ListadoEquipo> {
     });
   }
 
-  void _editarEquipo(int index) {
+  void _editarEquipo(int index) async {
     final equipo = _filteredEquipos[index];
+    final idEquipo = equipos[index].numeroSerie;
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => EditarEquipo(
         equipo: equipo,
-        onSave: (editedEquipo) {
-          setState(() {
-            equipos[index] = editedEquipo;
-            _filteredEquipos[index] = editedEquipo;
-          });
+        onSave: (editedEquipo) async {
+          try {
+            Map data = {
+              'id': idEquipo.toString(),
+              'numserie': editedEquipo.numeroSerie,
+              'numinventario': editedEquipo.numeroInventario,
+              'marca': editedEquipo.marca,
+              'modelo': editedEquipo.modelo,
+              'ram': editedEquipo.ram,
+              'almacenamiento': editedEquipo.almacenamiento,
+              'procesador': editedEquipo.procesador,
+              'departamento': editedEquipo.departamento,
+              'dirección': editedEquipo.direccion,
+              'sistemaoperativo': editedEquipo.sistemaOperativo,
+              'versionoffice': editedEquipo.versionOffice,
+              'descripcion': editedEquipo.descripcion
+            };
+            var body = jsonEncode(data);
+            final response = await http.put(
+            Uri.parse('http://10.0.2.2:80/inventario/api_equipos.php'),
+            body: body
+            );
+            if (response.statusCode == 200){
+              print("Actualizado");
+              setState(() {
+                equipos[index] = editedEquipo;
+                _filteredEquipos[index] = editedEquipo;
+              });
+            } else {
+              print("ERROR CRITICO UPDATE: ${response.statusCode}");
+              print("Body: ${response.body}");
+            }
+          } catch (e) {
+            print('Error: $e');
+          }
         },
       ),
     ));
