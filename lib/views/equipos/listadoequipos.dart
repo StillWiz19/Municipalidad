@@ -56,7 +56,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _eliminarEquipo(int index) async {
-    final idEquipo = equipos[index].numeroSerie;
+    final idEquipo = equipos[index].numeroSerie; //provisoriamente se usa el numero de serie como identificador
     showDialog(
       context: context,
       builder: (BuildContext context) {

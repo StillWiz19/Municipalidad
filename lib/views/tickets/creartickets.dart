@@ -1,6 +1,7 @@
+// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, prefer_final_fields
+
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/tickets/listatickets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Ticket {
   final String numeroTicket;
@@ -156,33 +157,20 @@ class _CrearTicketState extends State<CrearTicket> {
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String numeroTicket = _numeroTicketController.text;
-      String usuario = _usuarioController.text;
-      String departamento = _departamentoController.text;
-      String solicitud = _solicitudController.text;
+      Db_helper db = Db_helper();
 
-      Ticket ticket = Ticket(
-        numeroTicket: numeroTicket,
-        usuario: usuario,
-        departamento: departamento,
-        solicitud: solicitud,
+      db.crearTicket(
+        _numeroTicketController.text,
+        _usuarioController.text,
+        _departamentoController.text,
+        _solicitudController.text
       );
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-      ticketsData.add(
-          '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado}');
-      await prefs.setStringList('tickets', ticketsData);
-
-      final arguments = ModalRoute.of(context)!.settings.arguments;
-      if (arguments != null && arguments is ListaTickets) {
-        ListaTickets listaTickets = arguments;
-        listaTickets.tickets.add(ticket);
+      void limpiarCajas(){
+       _numeroTicketController.clear();
+        _usuarioController.clear();
+        _solicitudController.clear(); 
       }
-
-      _numeroTicketController.clear();
-      _usuarioController.clear();
-      _solicitudController.clear();
 
       setState(() {
            _departamentoController.clear();
@@ -205,6 +193,7 @@ class _CrearTicketState extends State<CrearTicket> {
           );
         },
       );
+      limpiarCajas();
     }
   }
 }

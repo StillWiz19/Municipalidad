@@ -1,5 +1,7 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields, library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:muniinventario/views/tickets/creartickets.dart';
 
 class ListaTickets extends StatefulWidget {
@@ -24,21 +26,22 @@ class _ListaTicketState extends State<ListaTickets>{
   }
 
   Future<void> _cargarDatos() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> ticketsData = prefs.getStringList('tickets') ?? [];
-    setState(() {
-      tickets = ticketsData.map((data){
-        List<String> ticketsData = data.split('|');
-        return Ticket(
-          numeroTicket: ticketsData[0],
-          usuario: ticketsData[1],
-          departamento: ticketsData[2],
-          solicitud: ticketsData[3],
-          aceptado: ticketsData.length > 4 && ticketsData[4] == 'aceptado' ? true : false,
-        );
-      }).toList();
-      filteredTickets.addAll(tickets); 
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_ticket.php'));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      setState(() {
+        tickets = jsonData.map((data){
+          return Ticket(
+            numeroTicket: data['numticket'],
+            usuario: data['numticket'],
+            departamento: data['numticket'],
+            solicitud: data['numticket'],
+            aceptado: jsonData.length > 4 && jsonData[4] == 'aceptado' ? true : false,
+          );
+        }).toList();
+        filteredTickets.addAll(tickets); 
+      });
+    }
   }
 
   Future<void> _eliminarTicket(int index) async{
@@ -69,20 +72,29 @@ class _ListaTicketState extends State<ListaTickets>{
   }
 
   Future<void> _confirmarEliminarTicket(int index) async{
-    setState(() {
-      tickets.removeAt(index);
-      filteredTickets.removeAt(index);
-    });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('tickets', 
-    tickets.map((ticket) => '${ticket.numeroTicket}|${ticket.usuario}|${ticket.departamento}|${ticket.solicitud}|${ticket.aceptado ? "aceptado" : "rechazado"}').toList());
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('El ticket se eliminó correctamente'),
-        )
+    final idTicket = tickets[index].numeroTicket;
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:80/inventario/api_ticket.php'),
+      body: {'id': idTicket.toString()}
     );
+    if (response.statusCode == 200) {
+      print("Ticket Eliminado");
+      setState(() {
+        tickets.removeAt(index);
+        filteredTickets.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('El ticket se eliminó correctamente'),
+          )
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al eliminar el ticket.'),
+        ),
+      );
+    }
   }
 
   void _aceptarTicket(int index) {
