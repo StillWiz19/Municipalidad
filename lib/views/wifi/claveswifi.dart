@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muniinventario/views/wifi/listawifi.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Wifi {
   final String nombreRed;
@@ -152,32 +151,21 @@ class _ClavesWifiState extends State<ClavesWifi> {
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String nombreRed = nombreRedController.text;
-      String departamento = departamentoController.text;
-      String contrasenia = contraseniaController.text;
+      Db_helper db = Db_helper();
 
-      Wifi wifi = Wifi(
-        nombreRed: nombreRed,
-        departamento: departamento,
-        contrasenia: contrasenia,
+      db.registrarClave(  
+        nombreRedController.text,
+        departamentoController.text,
+        contraseniaController.text
       );
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> wifiData = prefs.getStringList('wifi') ?? [];
-      wifiData.add('${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}');
-      await prefs.setStringList('wifi', wifiData);
-
-      final arguments = ModalRoute.of(context)!.settings.arguments;
-      if (arguments != null && arguments is ListarWifi) {
-        ListarWifi listarWifi = arguments;
-        listarWifi.claveswifi.add(wifi);
-      }
-
-      nombreRedController.clear();
-      contraseniaController.clear();
-      setState(() {
-        departamentoController.clear();
-      });
+      void limpiarCajas(){
+        nombreRedController.clear();
+        contraseniaController.clear();
+        setState(() {
+          departamentoController.clear();
+        });
+      }  
 
       showDialog(
         context: context,
@@ -196,6 +184,7 @@ class _ClavesWifiState extends State<ClavesWifi> {
           );
         },
       );
+      limpiarCajas();
     }
   }
 }

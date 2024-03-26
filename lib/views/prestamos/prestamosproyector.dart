@@ -1,6 +1,7 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/prestamos/registrarprestamoss.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PrestamosProyector extends StatefulWidget {
   final List<Prestamo> prestamos;
@@ -24,22 +25,23 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
-    setState(() {
-      prestamos = prestamosData.map((data) {
-        List<String> prestamosData = data.split('|');
-        return Prestamo(
-          numeroSerie: prestamosData[0],
-          usuario: prestamosData[1],
-          departamento: prestamosData[2],
-          dispositivo: prestamosData[3],
-          motivo: prestamosData[4],
-          fecha: prestamosData.length > 5 ? prestamosData[5] : "",
-        );
-      }).toList();
-      prestamosFiltrados = List.from(prestamos);
-    });
+    final response = await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_prestamos'));
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      setState(() {
+        prestamos = jsonData.map((data) {
+          return Prestamo(
+            numeroSerie: data['numserie'],
+            usuario: data['usuario'],
+            departamento: data['departamento'],
+            dispositivo: data['dispositivo'],
+            motivo: data['motivos'],
+            fecha: data['fechaprestamo'],
+          );
+        }).toList();
+        prestamosFiltrados = List.from(prestamos);
+      });
+    }
   }
 
   Future<void> _eliminarPrestamo(int index) async {
@@ -70,20 +72,29 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   }
 
   Future<void> _confirmarEliminarPrestamo(int index) async {
-    setState(() {
-      prestamos.removeAt(index);
-      prestamosFiltrados.removeAt(index);
-    });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('prestamos',
-        prestamos.map((prestamo) => '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.dispositivo}|${prestamo.motivo}|${prestamo.fecha}').toList());
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('El préstamo se eliminó correctamente.'),
-      ),
+    final idPrestamo = prestamos[index].numeroSerie;
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:80/inventario/api_prestamos.php'),
+      body: {'id': idPrestamo.toString()}
     );
+    if (response.statusCode == 200){
+      print('Prestamo Eliminado');
+      setState(() {
+        prestamos.removeAt(index);
+        prestamosFiltrados.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('El préstamo se eliminó correctamente.'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al eliminar el prestamo.')
+        )
+      );
+    }
   }
 
   void _filtrarPrestamos(String query) {

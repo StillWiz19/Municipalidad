@@ -1,7 +1,8 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/wifi/claveswifi.dart';
 import 'package:muniinventario/views/wifi/editarwifi.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ListarWifi extends StatefulWidget {
   final List<Wifi> claveswifi;
@@ -25,19 +26,20 @@ class _ListarWifiState extends State<ListarWifi> {
   }
 
   Future<void> _cargarDatos() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> wifiData = prefs.getStringList('wifi') ?? [];
-    setState(() {
-      claveswifi = wifiData.map((data) {
-        List<String> wifiData = data.split('|');
-        return Wifi(
-          nombreRed: wifiData[0],
-          departamento: wifiData[1],
-          contrasenia: wifiData[2],
-        );
-      }).toList();
-      claveswifiFiltradas = List.from(claveswifi);
-    });
+    final response =await http.get(Uri.parse('http://10.0.2.2:80/inventario/api_redes.php'));
+    if (response.statusCode == 200){
+      final List<dynamic> jsonData = json.decode(response.body);
+      setState(() {
+        claveswifi = jsonData.map((data) {
+          return Wifi(
+            nombreRed: data['nombrered'],
+            departamento: data['departamento'],
+            contrasenia: data['password'],
+          );
+        }).toList();
+        claveswifiFiltradas = List.from(claveswifi);
+      });
+    }
   }
 
   Future<void> _eliminarClaveWifi(int index) async {
@@ -68,19 +70,29 @@ class _ListarWifiState extends State<ListarWifi> {
   }
 
   Future<void> _confirmarEliminarClaveWifi(int index) async {
-    setState(() {
-      claveswifi.removeAt(index);
-      claveswifiFiltradas.removeAt(index);
-    });
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('wifi', claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('La clave WiFi se eliminó correctamente.'),
-      ),
+    final idRed = claveswifi[index].nombreRed;
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:80/inventario/api_redes.php'),
+      body: {'id': idRed.toString()}
     );
+    if (response.statusCode == 200){
+      print('Red Eliminada');
+      setState(() {
+        claveswifi.removeAt(index);
+        claveswifiFiltradas.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('La clave WiFi se eliminó correctamente.'),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al eliminar la red')
+        )
+      );
+    }
   }
 
   void _filtrarClavesWifi(String query) {
@@ -101,15 +113,9 @@ class _ListarWifiState extends State<ListarWifi> {
             claveswifi[index] = editedWifi;
             claveswifiFiltradas[index] = editedWifi;
           });
-          _actualizarDatosSharedPreferences();
         },
       ),
     ));
-  }
-
-  Future<void> _actualizarDatosSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('wifi', claveswifi.map((wifi) => '${wifi.nombreRed}|${wifi.departamento}|${wifi.contrasenia}').toList());
   }
 
   @override
@@ -148,7 +154,11 @@ class _ListarWifiState extends State<ListarWifi> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
+                child: claveswifiFiltradas.isEmpty ?
+                Center(
+                  child: Text('No hay claves registradas', style: TextStyle(color: Colors.white, fontSize: 16)),
+                ) :
+                ListView.builder(
                   itemCount: claveswifiFiltradas.length,
                   itemBuilder: (context, index) {
                     final wifi = claveswifiFiltradas[index];

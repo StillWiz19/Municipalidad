@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Prestamo {
   final String numeroSerie;
@@ -39,38 +39,28 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
 
   void _guardarDatos(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      String numeroSerie = _numeroSerieController.text;
-      String usuario = _usuarioController.text;
-      String departamento = _departamentoController.text;
-      String dispositivo = _dispositivoController.text;
-      String motivo = _motivoController.text;
-      String fecha = _fechaController.text;
+      Db_helper db = Db_helper();
 
-      Prestamo prestamo = Prestamo(
-        numeroSerie: numeroSerie,
-        usuario: usuario,
-        departamento: departamento,
-        dispositivo: dispositivo,
-        motivo: motivo,
-        fecha: fecha,
+      db.registrarPrestamo(
+        _numeroSerieController.text,
+        _usuarioController.text,
+        _departamentoController.text,
+        _dispositivoController.text,
+        _motivoController.text,
+        _fechaController.text
       );
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> prestamosData = prefs.getStringList('prestamos') ?? [];
-      prestamosData.add(
-          '${prestamo.numeroSerie}|${prestamo.usuario}|${prestamo.departamento}|${prestamo.dispositivo}|${prestamo.motivo}|${prestamo.fecha}');
-      await prefs.setStringList('prestamos', prestamosData);
-
-      _numeroSerieController.clear();
-      _usuarioController.clear();
-      _dispositivoController.clear();
-      _motivoController.clear();
-      _fechaController.clear();
+      void limpiarCajas() {
+        _numeroSerieController.clear();
+        _usuarioController.clear();
+        _dispositivoController.clear();
+        _motivoController.clear();
+        _fechaController.clear();
+      }
+      
       setState(() {
-              _departamentoController.clear();
+        _departamentoController.clear();
       });
-
-    
 
       showDialog(
         context: context,
@@ -89,6 +79,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
           );
         },
       );
+      limpiarCajas();
     }
   }
 
@@ -96,8 +87,8 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
+      firstDate: DateTime.now().subtract(Duration(days: 7)),
+      lastDate: DateTime.now().add(Duration(days: 7)),
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
@@ -125,7 +116,7 @@ class _PrestamoProyectorState extends State<RegistrarPrestamos> {
     );
     if (picked != null) {
       setState(() {
-        _fechaController.text = DateFormat('dd/MM/yyyy').format(picked);
+        _fechaController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }
