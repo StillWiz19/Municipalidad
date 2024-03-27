@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:muniinventario/views/wifi/claveswifi.dart';
 
@@ -70,6 +72,23 @@ class _EditarWifiState extends State<EditarWifi> {
                     );
                     widget.onSave(editedWifi);
                     Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Datos Actualizados"),
+                          content: Text("Los datos han sido actualizados correctamente."),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Cerrar"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                   child: Text('Guardar Cambios'),
                 ),

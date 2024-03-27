@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -105,14 +107,36 @@ class _ListarWifiState extends State<ListarWifi> {
 
   void _editarClaveWifi(int index) {
     final wifi = claveswifiFiltradas[index];
+    final idRed = claveswifi[index].nombreRed;
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => EditarWifi(
         wifi: wifi,
-        onSave: (editedWifi) {
-          setState(() {
-            claveswifi[index] = editedWifi;
-            claveswifiFiltradas[index] = editedWifi;
-          });
+        onSave: (editedWifi) async {
+          try{
+            Map data = {
+              'id': idRed.toString(),
+              'nombrered': editedWifi.nombreRed,
+              'departamento': editedWifi.departamento,
+              'password': editedWifi.contrasenia
+            };
+            var body = jsonEncode(data);
+            final response = await http.put(
+              Uri.parse('http://10.0.2.2:80/inventario/api_redes.php'),
+              body: body
+            );
+            if (response.statusCode == 200){
+              print("Actualizado");
+              setState(() {
+                claveswifi[index] = editedWifi;
+                claveswifiFiltradas[index] = editedWifi;
+              });
+            } else {
+              print("Error: ${response.statusCode}");
+              print("Detalle: ${response.body}");
+            }
+          } catch (e){
+            print('Error: $e');
+          }
         },
       ),
     ));
