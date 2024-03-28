@@ -31,6 +31,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
       setState(() {
         prestamos = jsonData.map((data) {
           return Prestamo(
+            idPrestamo: data['id'],
             numeroSerie: data['numserie'],
             usuario: data['usuario'],
             departamento: data['departamento'],
@@ -72,7 +73,7 @@ class _PrestamoProyectorState extends State<PrestamosProyector> {
   }
 
   Future<void> _confirmarEliminarPrestamo(int index) async {
-    final idPrestamo = prestamos[index].numeroSerie;
+    final idPrestamo = prestamos[index].idPrestamo;
     final response = await http.post(
       Uri.parse('http://10.0.2.2:80/inventario/api_prestamos.php'),
       body: {'id': idPrestamo.toString()}

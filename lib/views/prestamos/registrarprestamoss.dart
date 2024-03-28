@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Prestamo {
+  final String? idPrestamo;
   final String numeroSerie;
   final String usuario;
   final String departamento;
@@ -11,6 +12,7 @@ class Prestamo {
   final String fecha;
 
   Prestamo({
+    this.idPrestamo,
     required this.numeroSerie,
     required this.usuario,
     required this.departamento,

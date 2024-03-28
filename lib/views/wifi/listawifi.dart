@@ -34,6 +34,7 @@ class _ListarWifiState extends State<ListarWifi> {
       setState(() {
         claveswifi = jsonData.map((data) {
           return Wifi(
+            idRed: data['id'],
             nombreRed: data['nombrered'],
             departamento: data['departamento'],
             contrasenia: data['password'],
@@ -72,7 +73,7 @@ class _ListarWifiState extends State<ListarWifi> {
   }
 
   Future<void> _confirmarEliminarClaveWifi(int index) async {
-    final idRed = claveswifi[index].nombreRed;
+    final idRed = claveswifi[index].idRed;
     final response = await http.post(
       Uri.parse('http://10.0.2.2:80/inventario/api_redes.php'),
       body: {'id': idRed.toString()}
@@ -107,7 +108,7 @@ class _ListarWifiState extends State<ListarWifi> {
 
   void _editarClaveWifi(int index) {
     final wifi = claveswifiFiltradas[index];
-    final idRed = claveswifi[index].nombreRed;
+    final idRed = claveswifi[index].idRed;
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => EditarWifi(
         wifi: wifi,

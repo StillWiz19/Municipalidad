@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Wifi {
+  final String? idRed;
   final String nombreRed;
   final String departamento;
   final String contrasenia;
 
   Wifi({
+    this.idRed,
     required this.nombreRed,
     required this.departamento,
     required this.contrasenia,

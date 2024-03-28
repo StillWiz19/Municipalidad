@@ -32,10 +32,11 @@ class _ListaTicketState extends State<ListaTickets>{
       setState(() {
         tickets = jsonData.map((data){
           return Ticket(
+            idTicket: data['id'],
             numeroTicket: data['numticket'],
-            usuario: data['numticket'],
-            departamento: data['numticket'],
-            solicitud: data['numticket'],
+            usuario: data['usuario'],
+            departamento: data['departamento'],
+            solicitud: data['solicitud'],
             aceptado: jsonData.length > 4 && jsonData[4] == 'aceptado' ? true : false,
           );
         }).toList();
@@ -72,7 +73,7 @@ class _ListaTicketState extends State<ListaTickets>{
   }
 
   Future<void> _confirmarEliminarTicket(int index) async{
-    final idTicket = tickets[index].numeroTicket;
+    final idTicket = tickets[index].idTicket;
     final response = await http.post(
       Uri.parse('http://10.0.2.2:80/inventario/api_ticket.php'),
       body: {'id': idTicket.toString()}

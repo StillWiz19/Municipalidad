@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Ticket {
+  final String? idTicket;
   final String numeroTicket;
   final String usuario;
   final String departamento;
@@ -11,6 +12,7 @@ class Ticket {
   bool aceptado;
 
   Ticket({
+    this.idTicket,
     required this.numeroTicket,
     required this.usuario,
     required this.departamento,
