@@ -35,6 +35,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
       setState(() {
         equipos = jsonData.map((data) {
           return Equipo(
+            idEquipo: data['id'],
             modelo: data['modelo'],
             numeroSerie: data['numserie'],
             numeroInventario: data['numinventario'],
@@ -56,7 +57,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
   }
 
   Future<void> _eliminarEquipo(int index) async {
-    final idEquipo = equipos[index].numeroSerie; //provisoriamente se usa el numero de serie como identificador
+    final idEquipo = equipos[index].idEquipo;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -114,7 +115,7 @@ class _ListaEquipoState extends State<ListadoEquipo> {
 
   void _editarEquipo(int index) async {
     final equipo = _filteredEquipos[index];
-    final idEquipo = equipos[index].numeroSerie;
+    final idEquipo = equipos[index].idEquipo;
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => EditarEquipo(
         equipo: equipo,

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Equipo {
+  final String? idEquipo;
   final String modelo;
   final String numeroSerie;
   final String numeroInventario;
@@ -22,6 +23,7 @@ class Equipo {
   final String? imagenPath;
 
   Equipo({
+    this.idEquipo,
     required this.modelo,
     required this.numeroSerie,
     required this.numeroInventario,

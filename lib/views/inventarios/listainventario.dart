@@ -33,6 +33,7 @@ class _ListaInventarioState extends State<ListaInventario> {
       setState(() {
         inventarios = jsonData.map((data) {
           return Inventario(
+            idInventario: data['id'],
             numeroSerie: data['numserie'],
             numeroInventario: data['numinventario'],
             modelo: data['modelo'],
@@ -48,7 +49,7 @@ class _ListaInventarioState extends State<ListaInventario> {
   }
 
   Future<void> _eliminarInventario(int index) async {
-    final idEquipo = inventarios[index].numeroSerie;
+    final idInv = inventarios[index].idInventario;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -67,7 +68,7 @@ class _ListaInventarioState extends State<ListaInventario> {
                 Navigator.of(context).pop(); 
                 final response = await http.post(
                   Uri.parse('http://10.0.2.2:80/inventario/api_inventario.php'),
-                  body: {'id': idEquipo.toString()},
+                  body: {'id': idInv.toString()},
                 );
                 if (response.statusCode == 200){
                   print("Inventario Eliminado");

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:muniinventario/db_helper/db_helper.dart';
 
 class Inventario {
+  final String? idInventario;
   final String numeroSerie;
   final String numeroInventario;
   final String modelo;
@@ -11,6 +12,7 @@ class Inventario {
   final String departamento;
 
   Inventario({
+    this.idInventario,
     required this.numeroSerie,
     required this.numeroInventario,
     required this.modelo,
